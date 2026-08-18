@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sparkles, X, Check, Link2 } from 'lucide-react';
 import { useJobs } from '../context/JobContext';
 import { parseJobDescriptionText } from '../utils/helpers';
@@ -9,13 +9,21 @@ export const SmartPasteModal: React.FC = () => {
   const [rawText, setRawText] = useState('');
   const [parsedData, setParsedData] = useState<any | null>(null);
 
+  // Reset modal state every time it opens
+  useEffect(() => {
+    if (isSmartPasteOpen) {
+      setRawText('');
+      setParsedData(null);
+    }
+  }, [isSmartPasteOpen]);
+
   if (!isSmartPasteOpen) return null;
 
   const handleParse = () => {
     if (!rawText.trim()) return;
     const result = parseJobDescriptionText(rawText);
 
-    // Check if rawText contains a URL
+    // Extract URL if present in raw text
     const urlMatch = rawText.match(/https?:\/\/[^\s]+/i);
 
     setParsedData({

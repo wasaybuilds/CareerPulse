@@ -233,21 +233,21 @@ export function parseJobDescriptionText(rawText: string): Partial<JobApplication
     detectedRole = lines[0].replace(/^(job title|role|position):\s*/i, '').trim();
   }
 
-  result.role = detectedRole || 'Staff Software Engineer';
+  result.role = detectedRole || (lines[0] && lines[0].length < 60 && !lines[0].toLowerCase().startsWith('about') ? lines[0] : 'Software Engineer');
 
   // 2. EXTRACT COMPANY NAME
   let detectedCompany = '';
 
-  // Pattern: "Optomi, in partnership with..." or "Optomi is seeking..." or "At Optomi..."
+  // Pattern: "[Company], in partnership with..." or "[Company] is seeking..."
   const companyStartRegex = /(?:^|\n)(?:About the job\s+)?([A-Z][A-Za-z0-9&.\s]{1,25}?)(?:,\s+in partnership with|\s+is seeking|\s+is hiring|\s+is looking for)/i;
   const startMatch = cleanText.match(companyStartRegex);
-  if (startMatch && startMatch[1] && !['The', 'About', 'We', 'Our', 'Join', 'This'].includes(startMatch[1].trim())) {
+  if (startMatch && startMatch[1] && !['The', 'About', 'We', 'Our', 'Join', 'This', 'In'].includes(startMatch[1].trim())) {
     detectedCompany = startMatch[1].trim();
   }
 
   if (!detectedCompany) {
     const atMatch = cleanText.match(/(?:at|join|with)\s+([A-Z][A-Za-z0-9&.\s]{2,25}?)(?:\s+(?:is hiring|team|in|for|\.|,|$))/);
-    if (atMatch && atMatch[1] && !['The', 'A', 'Our', 'This', 'About'].includes(atMatch[1].trim())) {
+    if (atMatch && atMatch[1] && !['The', 'A', 'Our', 'This', 'About', 'We', 'In'].includes(atMatch[1].trim())) {
       detectedCompany = atMatch[1].trim();
     }
   }
@@ -255,9 +255,14 @@ export function parseJobDescriptionText(rawText: string): Partial<JobApplication
   if (!detectedCompany && lines[0] && lines[0].includes(' at ')) {
     const parts = lines[0].split(' at ');
     if (parts[1] && parts[1].length < 35) detectedCompany = parts[1].trim();
+  } else if (!detectedCompany && lines[0] && lines[0].includes(' - ')) {
+    const parts = lines[0].split(' - ');
+    if (parts[0] && parts[0].length < 35 && !parts[0].toLowerCase().includes('looking')) {
+      detectedCompany = parts[0].trim();
+    }
   }
 
-  result.company = detectedCompany || 'Optomi';
+  result.company = detectedCompany || 'Unknown Company';
 
   // 3. EXTRACT WORK MODE & LOCATION
   const textLower = cleanText.toLowerCase();
