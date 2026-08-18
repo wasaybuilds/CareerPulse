@@ -5,72 +5,64 @@ export const STATUS_CONFIG: Record<JobStatus, {
   badgeBg: string;
   badgeText: string;
   borderColor: string;
-  lightBg: string;
   dotColor: string;
   description: string;
 }> = {
   wishlist: {
-    label: 'Wishlist / Saved',
-    badgeBg: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
-    badgeText: 'text-rose-400',
-    borderColor: 'border-rose-500/40',
-    lightBg: 'bg-rose-950/20',
-    dotColor: 'bg-rose-400',
-    description: 'Jobs you plan to apply to or are tracking'
+    label: 'Wishlist',
+    badgeBg: 'bg-zinc-800/80 text-zinc-300 border-zinc-700/60',
+    badgeText: 'text-zinc-300',
+    borderColor: 'border-zinc-700/50',
+    dotColor: 'bg-zinc-400',
+    description: 'Saved roles to apply to'
   },
   applied: {
     label: 'Applied',
-    badgeBg: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
-    badgeText: 'text-cyan-400',
-    borderColor: 'border-cyan-500/40',
-    lightBg: 'bg-cyan-950/20',
-    dotColor: 'bg-cyan-400',
-    description: 'Submitted application, waiting for response'
+    badgeBg: 'bg-blue-500/10 text-blue-400 border-blue-500/25',
+    badgeText: 'text-blue-400',
+    borderColor: 'border-blue-500/30',
+    dotColor: 'bg-blue-400',
+    description: 'Application submitted'
   },
   oa: {
     label: 'Assessment (OA)',
-    badgeBg: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+    badgeBg: 'bg-amber-500/10 text-amber-400 border-amber-500/25',
     badgeText: 'text-amber-400',
-    borderColor: 'border-amber-500/40',
-    lightBg: 'bg-amber-950/20',
+    borderColor: 'border-amber-500/30',
     dotColor: 'bg-amber-400',
-    description: 'Take-home assignment or HackerRank / LeetCode OA'
+    description: 'Online assessment / Take-home'
   },
   interview: {
     label: 'Interviewing',
-    badgeBg: 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/30',
-    badgeText: 'text-fuchsia-400',
-    borderColor: 'border-fuchsia-500/40',
-    lightBg: 'bg-fuchsia-950/20',
-    dotColor: 'bg-fuchsia-400',
-    description: 'Active interview rounds in progress'
+    badgeBg: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/25',
+    badgeText: 'text-indigo-400',
+    borderColor: 'border-indigo-500/30',
+    dotColor: 'bg-indigo-400',
+    description: 'Interview rounds in progress'
   },
   offer: {
-    label: 'Offer Received 🎉',
-    badgeBg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40',
-    badgeText: 'text-emerald-300',
-    borderColor: 'border-emerald-500/50',
-    lightBg: 'bg-emerald-950/30',
+    label: 'Offer',
+    badgeBg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25',
+    badgeText: 'text-emerald-400',
+    borderColor: 'border-emerald-500/30',
     dotColor: 'bg-emerald-400',
-    description: 'Congratulations! Official job offer made'
+    description: 'Official offer received'
   },
   rejected: {
     label: 'Rejected',
-    badgeBg: 'bg-slate-500/10 text-slate-400 border-slate-700/50',
-    badgeText: 'text-slate-400',
-    borderColor: 'border-slate-700/50',
-    lightBg: 'bg-slate-900/40',
-    dotColor: 'bg-slate-500',
-    description: 'Application was not selected'
-  },
-  archived: {
-    label: 'Archived / Ghosted',
-    badgeBg: 'bg-zinc-500/10 text-zinc-400 border-zinc-700/40',
+    badgeBg: 'bg-zinc-800/50 text-zinc-400 border-zinc-700/40',
     badgeText: 'text-zinc-400',
     borderColor: 'border-zinc-700/40',
-    lightBg: 'bg-zinc-950/20',
     dotColor: 'bg-zinc-500',
-    description: 'Closed, withdrawn, or no response for 30+ days'
+    description: 'Application not selected'
+  },
+  archived: {
+    label: 'Archived',
+    badgeBg: 'bg-zinc-800/40 text-zinc-500 border-zinc-800',
+    badgeText: 'text-zinc-500',
+    borderColor: 'border-zinc-800',
+    dotColor: 'bg-zinc-600',
+    description: 'Closed or withdrawn'
   }
 };
 
@@ -86,7 +78,7 @@ export function formatSalary(
   currency: string = 'USD',
   period: 'year' | 'month' | 'hour' = 'year'
 ): string {
-  if (!min && !max) return 'Salary undisclosed';
+  if (!min && !max) return 'Undisclosed';
 
   const symbolMap: Record<string, string> = {
     USD: '$',
@@ -113,7 +105,7 @@ export function formatSalary(
   }
   if (min) return `From ${sym}${formatNum(min)}${periodSuffix}`;
   if (max) return `Up to ${sym}${formatNum(max)}${periodSuffix}`;
-  return 'Salary undisclosed';
+  return 'Undisclosed';
 }
 
 export function formatDate(dateStr?: string): string {
@@ -241,7 +233,7 @@ export function parseJobDescriptionText(rawText: string): Partial<JobApplication
       detectedSkills.add(skill);
     }
   }
-  result.keySkills = Array.from(detectedSkills).slice(0, 10);
+  result.keySkills = Array.from(detectedSkills).slice(0, 8);
   result.matchedSkills = [];
 
   return result;
@@ -251,7 +243,7 @@ export function generateShareableSummary(job: JobApplication): string {
   const statusLabel = STATUS_CONFIG[job.status]?.label || job.status;
   const salaryStr = formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency, job.salaryPeriod);
   
-  return `🍉 *Job Application Update*
+  return `📌 *Job Application Update*
 🏢 *Company:* ${job.company}
 💼 *Role:* ${job.role}
 📍 *Location:* ${job.location} (${job.workMode.toUpperCase()})
@@ -260,7 +252,7 @@ export function generateShareableSummary(job: JobApplication): string {
 ${job.dateApplied ? `📅 *Applied Date:* ${job.dateApplied}\n` : ''}${job.url ? `🔗 *Job Link:* ${job.url}\n` : ''}
 💡 *Key Skills:* ${job.keySkills.join(', ') || 'Not specified'}
 ${job.notes ? `📝 *Notes:* ${job.notes}\n` : ''}
-_Tracked via CareerPulse 🍉_`;
+_Tracked via CareerPulse_`;
 }
 
 export function exportToCSV(jobs: JobApplication[]): string {

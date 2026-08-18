@@ -9,11 +9,8 @@ import {
   BarChart3, 
   Calendar as CalendarIcon,
   Search,
-  CheckCircle2,
-  Clock,
-  Award,
-  Database,
-  RefreshCw
+  RefreshCw,
+  Layers
 } from 'lucide-react';
 import { useJobs } from '../context/JobContext';
 
@@ -34,154 +31,142 @@ export const Header: React.FC = () => {
   } = useJobs();
 
   return (
-    <header className="sticky top-0 z-30 border-b border-rose-500/10 bg-[#080d14]/85 backdrop-blur-2xl">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3.5">
+    <header className="sticky top-0 z-30 border-b border-zinc-800/70 bg-[#0d1117]/95 backdrop-blur-xl">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           
-          {/* Brand & Logo with Watermelon UI Vibe */}
+          {/* Brand & Stats */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="relative w-10 h-10 rounded-2xl bg-gradient-to-br from-[#ff2d55] via-[#ff477e] to-[#10b981] p-0.5 shadow-lg shadow-rose-500/25 shrink-0 animate-pulse-subtle">
-                <div className="w-full h-full bg-[#090e15] rounded-[14px] flex items-center justify-center">
-                  <span className="text-lg select-none">🍉</span>
-                </div>
+              <div className="w-8 h-8 rounded-lg bg-indigo-600/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold shrink-0">
+                <Layers className="w-4 h-4 text-indigo-400" />
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-lg font-extrabold tracking-tight text-white flex items-center gap-1">
-                    Career<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff3864] via-[#ff5e85] to-[#10b981]">Pulse</span>
-                  </h1>
-                  
-                  {/* Database Status Badge */}
-                  <button
-                    onClick={() => syncWithMongoDB()}
-                    className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold border transition ${
-                      dbStatus.online
-                        ? 'bg-emerald-950/40 text-emerald-300 border-emerald-500/30 hover:bg-emerald-900/50'
-                        : 'bg-rose-950/40 text-rose-300 border-rose-500/30 hover:bg-rose-900/50'
-                    }`}
-                    title={dbStatus.online ? 'Connected to MongoDB Atlas. Click to sync.' : 'Running in Local Cache Mode. Click to reconnect.'}
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full ${dbStatus.online ? 'bg-emerald-400 animate-ping' : 'bg-rose-400'}`}></span>
-                    <Database className="w-3 h-3" />
-                    <span>{dbStatus.online ? 'MongoDB Live' : 'Local DB'}</span>
-                    {isSyncing && <RefreshCw className="w-2.5 h-2.5 animate-spin ml-0.5" />}
-                  </button>
-                </div>
-                <p className="text-[11px] text-slate-400">
-                  Track jobs, JDs, resumes & interviews backed by MongoDB
-                </p>
+              <div className="flex items-center gap-2">
+                <h1 className="text-base font-bold tracking-tight text-white">
+                  Career<span className="text-indigo-400">Pulse</span>
+                </h1>
+                
+                {/* Database Status Dot */}
+                <button
+                  onClick={() => syncWithMongoDB()}
+                  className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium border transition ${
+                    dbStatus.online
+                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'
+                      : 'bg-zinc-800/80 text-zinc-400 border-zinc-700/60 hover:bg-zinc-800'
+                  }`}
+                  title={dbStatus.online ? 'Synced to MongoDB Atlas' : 'Local Cache Active'}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${dbStatus.online ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+                  <span>{dbStatus.online ? 'MongoDB' : 'Local'}</span>
+                  {isSyncing && <RefreshCw className="w-2.5 h-2.5 animate-spin ml-0.5 text-zinc-400" />}
+                </button>
               </div>
             </div>
 
-            {/* Mobile Plus Button */}
+            {/* Mobile Plus */}
             <div className="flex items-center gap-2 md:hidden">
               <button
                 onClick={() => setIsAddModalOpen(true)}
-                className="p-2 rounded-xl bg-gradient-to-r from-[#ff2d55] to-[#ff477e] text-white shadow-md shadow-rose-500/20"
-                title="Add Job"
+                className="p-1.5 rounded-lg bg-indigo-600 text-white"
+                title="Add Application"
               >
                 <Plus className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* Quick Metrics Bar with Watermelon Aesthetics */}
-          <div className="hidden lg:flex items-center gap-2.5 bg-[#0d141e]/80 p-1.5 rounded-2xl border border-white/[0.06] text-xs">
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-900/60 text-slate-300 border border-slate-800/60">
-              <Clock className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="font-bold text-white">{metrics.activeApplications}</span> Active
-            </div>
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-900/60 text-slate-300 border border-slate-800/60">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#ff477e]" />
-              <span className="font-bold text-white">{metrics.interview}</span> Interviewing
-            </div>
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#03231a] text-emerald-300 border border-emerald-500/30">
-              <Award className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="font-bold text-emerald-400">{metrics.offer}</span> {metrics.offer === 1 ? 'Offer' : 'Offers'} 🎉
-            </div>
+          {/* Quick Metrics Bar */}
+          <div className="hidden lg:flex items-center gap-2 text-xs text-zinc-400">
+            <span className="px-2.5 py-1 rounded-md bg-[#161b22] border border-zinc-800 text-zinc-300">
+              <strong className="text-white">{metrics.activeApplications}</strong> Active
+            </span>
+            <span className="px-2.5 py-1 rounded-md bg-[#161b22] border border-zinc-800 text-zinc-300">
+              <strong className="text-indigo-400">{metrics.interview}</strong> Interviews
+            </span>
+            <span className="px-2.5 py-1 rounded-md bg-[#161b22] border border-zinc-800 text-zinc-300">
+              <strong className="text-emerald-400">{metrics.offer}</strong> Offers
+            </span>
           </div>
 
-          {/* Main Action Buttons */}
-          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setIsSmartPasteOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-gradient-to-r from-[#ff3864]/10 to-[#10b981]/10 hover:from-[#ff3864]/20 hover:to-[#10b981]/20 text-rose-300 border border-rose-500/30 hover:border-rose-500/60 transition shadow-sm"
-              title="Paste raw Job Description text to auto-parse"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-[#161b22] hover:bg-[#21262d] text-zinc-300 border border-zinc-800 hover:border-zinc-700 transition"
+              title="Smart Paste Job Description"
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#ff477e]" />
-              <span className="hidden sm:inline">Smart Paste JD</span>
-              <span className="sm:hidden">Paste JD</span>
+              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Smart Paste</span>
             </button>
 
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-[#ff2d55] to-[#ff477e] hover:from-[#ff1a47] hover:to-[#ff3864] text-white shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 transition hover:scale-[1.02] active:scale-[0.98]"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" />
               <span>Add Job</span>
             </button>
 
-            <div className="h-6 w-px bg-slate-800 mx-1 hidden sm:block"></div>
+            <div className="h-4 w-px bg-zinc-800 mx-1 hidden sm:block"></div>
 
             <button
               onClick={() => setIsImportExportOpen(true)}
-              className="p-2 text-slate-400 hover:text-slate-100 bg-[#0d141e] hover:bg-slate-800 rounded-xl border border-white/[0.07] transition"
-              title="Export to CSV/Sheets or Import"
+              className="p-1.5 text-zinc-400 hover:text-zinc-200 bg-[#161b22] hover:bg-[#21262d] rounded-lg border border-zinc-800 transition"
+              title="Import / Export"
             >
-              <FileSpreadsheet className="w-4 h-4" />
+              <FileSpreadsheet className="w-3.5 h-3.5" />
             </button>
 
             <button
               onClick={() => {
-                if (confirm('Load demo sample jobs and sync with database?')) {
+                if (confirm('Load sample applications?')) {
                   resetToSampleData();
                 }
               }}
-              className="p-2 text-slate-400 hover:text-slate-100 bg-[#0d141e] hover:bg-slate-800 rounded-xl border border-white/[0.07] transition"
-              title="Load Sample Demo Data"
+              className="p-1.5 text-zinc-400 hover:text-zinc-200 bg-[#161b22] hover:bg-[#21262d] rounded-lg border border-zinc-800 transition"
+              title="Reset Sample Data"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-3.5 h-3.5" />
             </button>
           </div>
 
         </div>
 
-        {/* View Switcher & Quick Search Row */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-3 pt-3 border-t border-white/[0.06]">
+        {/* View Switcher & Search */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 mt-2.5 pt-2.5 border-t border-zinc-800/60">
           
-          {/* Navigation Views with Watermelon highlights */}
-          <div className="flex items-center bg-[#0d141e]/90 p-1 rounded-2xl border border-white/[0.08] self-start">
+          {/* Navigation View Switcher */}
+          <div className="flex items-center bg-[#161b22] p-0.5 rounded-lg border border-zinc-800 self-start">
             <button
               onClick={() => setViewMode('kanban')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition ${
+              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md transition ${
                 viewMode === 'kanban' 
-                  ? 'bg-gradient-to-r from-[#ff2d55] to-[#ff477e] text-white shadow-md shadow-rose-500/25' 
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  ? 'bg-zinc-800 text-white shadow-sm font-semibold' 
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
               <Kanban className="w-3.5 h-3.5" />
-              <span>Pipeline Board</span>
+              <span>Board</span>
             </button>
 
             <button
               onClick={() => setViewMode('table')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition ${
+              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md transition ${
                 viewMode === 'table' 
-                  ? 'bg-gradient-to-r from-[#ff2d55] to-[#ff477e] text-white shadow-md shadow-rose-500/25' 
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  ? 'bg-zinc-800 text-white shadow-sm font-semibold' 
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
               <TableIcon className="w-3.5 h-3.5" />
-              <span>Table Grid</span>
+              <span>Table</span>
             </button>
 
             <button
               onClick={() => setViewMode('analytics')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition ${
+              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md transition ${
                 viewMode === 'analytics' 
-                  ? 'bg-gradient-to-r from-[#ff2d55] to-[#ff477e] text-white shadow-md shadow-rose-500/25' 
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  ? 'bg-zinc-800 text-white shadow-sm font-semibold' 
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
               <BarChart3 className="w-3.5 h-3.5" />
@@ -190,10 +175,10 @@ export const Header: React.FC = () => {
 
             <button
               onClick={() => setViewMode('calendar')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition ${
+              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md transition ${
                 viewMode === 'calendar' 
-                  ? 'bg-gradient-to-r from-[#ff2d55] to-[#ff477e] text-white shadow-md shadow-rose-500/25' 
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  ? 'bg-zinc-800 text-white shadow-sm font-semibold' 
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
               <CalendarIcon className="w-3.5 h-3.5" />
@@ -201,20 +186,20 @@ export const Header: React.FC = () => {
             </button>
           </div>
 
-          {/* Quick Search Input */}
-          <div className="relative w-full sm:w-72">
-            <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-slate-500" />
+          {/* Quick Search */}
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-2.5 top-2 w-3.5 h-3.5 text-zinc-500" />
             <input
               type="text"
-              placeholder="Search role, company, skill..."
+              placeholder="Search company, role, skill..."
               value={filters.searchQuery}
               onChange={(e) => setFilters(prev => ({ ...prev, searchQuery: e.target.value }))}
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-[#0d141e] border border-white/[0.08] text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#ff3864] focus:ring-1 focus:ring-[#ff3864] transition"
+              className="w-full pl-8 pr-3 py-1 text-xs rounded-lg bg-[#161b22] border border-zinc-800 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
             />
             {filters.searchQuery && (
               <button
                 onClick={() => setFilters(prev => ({ ...prev, searchQuery: '' }))}
-                className="absolute right-2.5 top-2 text-xs text-slate-500 hover:text-slate-300"
+                className="absolute right-2 top-1.5 text-xs text-zinc-500 hover:text-zinc-300"
               >
                 ✕
               </button>

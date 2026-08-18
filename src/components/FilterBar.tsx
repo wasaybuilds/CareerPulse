@@ -12,7 +12,6 @@ import { STATUS_CONFIG } from '../utils/helpers';
 export const FilterBar: React.FC = () => {
   const { jobs, filters, setFilters, filteredJobs } = useJobs();
 
-  // Extract all unique sources and tags from existing jobs
   const sources = Array.from(new Set(jobs.map(j => j.source).filter(Boolean))) as string[];
   const allTags = Array.from(new Set(jobs.flatMap(j => j.tags))).filter(Boolean);
 
@@ -40,14 +39,14 @@ export const FilterBar: React.FC = () => {
   };
 
   return (
-    <div className="bg-slate-900/40 border-b border-slate-800/60 px-4 sm:px-6 lg:px-8 py-2.5">
-      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
+    <div className="bg-[#0d1117]/60 border-b border-zinc-800/60 px-4 sm:px-6 py-2 text-xs">
+      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2.5">
         
         {/* Left Filter Dropdowns */}
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1.5 text-slate-400 font-medium mr-1">
+          <div className="flex items-center gap-1.5 text-zinc-500 font-medium mr-1">
             <Filter className="w-3.5 h-3.5" />
-            <span>Filters:</span>
+            <span>Filter:</span>
           </div>
 
           {/* Status Filter */}
@@ -55,7 +54,7 @@ export const FilterBar: React.FC = () => {
             value={filters.status}
             onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value as JobStatus | 'all' }))}
             aria-label="Filter jobs by status"
-            className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700 focus:outline-none focus:border-indigo-500 transition"
+            className="px-2.5 py-1 rounded-md bg-[#161b22] border border-zinc-800 text-zinc-300 hover:border-zinc-700 focus:outline-none focus:border-indigo-500 transition text-xs"
           >
             <option value="all">All Stages ({jobs.length})</option>
             {Object.entries(STATUS_CONFIG).map(([key, config]) => (
@@ -70,7 +69,7 @@ export const FilterBar: React.FC = () => {
             value={filters.workMode}
             onChange={(e) => setFilters(prev => ({ ...prev, workMode: e.target.value as WorkMode | 'all' }))}
             aria-label="Filter jobs by work mode"
-            className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700 focus:outline-none focus:border-indigo-500 transition"
+            className="px-2.5 py-1 rounded-md bg-[#161b22] border border-zinc-800 text-zinc-300 hover:border-zinc-700 focus:outline-none focus:border-indigo-500 transition text-xs"
           >
             <option value="all">All Work Modes</option>
             <option value="remote">Remote</option>
@@ -84,7 +83,7 @@ export const FilterBar: React.FC = () => {
               value={filters.source}
               onChange={(e) => setFilters(prev => ({ ...prev, source: e.target.value }))}
               aria-label="Filter jobs by source"
-              className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700 focus:outline-none focus:border-indigo-500 transition"
+              className="px-2.5 py-1 rounded-md bg-[#161b22] border border-zinc-800 text-zinc-300 hover:border-zinc-700 focus:outline-none focus:border-indigo-500 transition text-xs"
             >
               <option value="all">All Sources</option>
               {sources.map(s => (
@@ -99,7 +98,7 @@ export const FilterBar: React.FC = () => {
               value={filters.tag}
               onChange={(e) => setFilters(prev => ({ ...prev, tag: e.target.value }))}
               aria-label="Filter jobs by tag"
-              className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700 focus:outline-none focus:border-indigo-500 transition"
+              className="px-2.5 py-1 rounded-md bg-[#161b22] border border-zinc-800 text-zinc-300 hover:border-zinc-700 focus:outline-none focus:border-indigo-500 transition text-xs"
             >
               <option value="all">All Tags</option>
               {allTags.map(t => (
@@ -111,14 +110,13 @@ export const FilterBar: React.FC = () => {
           {/* Priority Star Filter */}
           <button
             onClick={() => setFilters(prev => ({ ...prev, minPriority: prev.minPriority === 4 ? 0 : 4 }))}
-            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border transition ${
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-md border transition text-xs ${
               filters.minPriority >= 4
-                ? 'bg-amber-500/10 text-amber-300 border-amber-500/40'
-                : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
+                ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                : 'bg-[#161b22] border-zinc-800 text-zinc-400 hover:text-zinc-200'
             }`}
-            title="High Priority Jobs (4+ Stars)"
           >
-            <Star className={`w-3.5 h-3.5 ${filters.minPriority >= 4 ? 'fill-amber-400 text-amber-400' : ''}`} />
+            <Star className={`w-3 h-3 ${filters.minPriority >= 4 ? 'fill-amber-400 text-amber-400' : ''}`} />
             <span>High Priority</span>
           </button>
 
@@ -126,30 +124,30 @@ export const FilterBar: React.FC = () => {
           {hasActiveFilters && (
             <button
               onClick={resetFilters}
-              className="flex items-center gap-1 px-2 py-1 text-slate-400 hover:text-rose-400 transition"
-              title="Reset all filters"
+              className="flex items-center gap-1 px-2 py-1 text-zinc-500 hover:text-rose-400 transition"
+              title="Reset filters"
             >
               <RotateCcw className="w-3 h-3" />
-              <span>Reset</span>
+              <span>Clear</span>
             </button>
           )}
         </div>
 
-        {/* Right Sort Controls & Count */}
+        {/* Right Sort Controls */}
         <div className="flex items-center gap-2 ml-auto">
-          <span className="text-slate-400">
-            Showing <strong className="text-white">{filteredJobs.length}</strong> of {jobs.length}
+          <span className="text-zinc-500 text-xs">
+            <strong className="text-zinc-300">{filteredJobs.length}</strong> jobs
           </span>
 
-          <div className="h-4 w-px bg-slate-800"></div>
+          <div className="h-3.5 w-px bg-zinc-800"></div>
 
           <div className="flex items-center gap-1.5">
-            <ArrowUpDown className="w-3.5 h-3.5 text-slate-500" />
+            <ArrowUpDown className="w-3 h-3 text-zinc-500" />
             <select
               value={filters.sortBy}
               onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value as any }))}
               aria-label="Sort jobs by"
-              className="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700 focus:outline-none focus:border-indigo-500 transition"
+              className="px-2 py-1 rounded-md bg-[#161b22] border border-zinc-800 text-zinc-300 hover:border-zinc-700 focus:outline-none focus:border-indigo-500 transition text-xs"
             >
               <option value="dateAdded">Date Added</option>
               <option value="dateApplied">Date Applied</option>
@@ -157,12 +155,11 @@ export const FilterBar: React.FC = () => {
               <option value="role">Role</option>
               <option value="salary">Salary</option>
               <option value="priority">Priority</option>
-              <option value="deadline">Deadline</option>
             </select>
 
             <button
               onClick={() => setFilters(prev => ({ ...prev, sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc' }))}
-              className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 transition"
+              className="p-1 rounded-md bg-[#161b22] border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition text-xs px-2"
               title={`Sorting ${filters.sortOrder.toUpperCase()}`}
             >
               {filters.sortOrder === 'desc' ? '↓' : '↑'}
