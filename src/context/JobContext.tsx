@@ -9,7 +9,7 @@ import type {
   MetricSummary, 
   InterviewRound 
 } from '../types/job';
-import { INITIAL_JOBS } from '../utils/mockData';
+import { INITIAL_JOBS, SAMPLE_SEED_JOBS } from '../utils/mockData';
 import { calculateMetrics } from '../utils/helpers';
 import { apiService, type DbStatus } from '../services/api';
 import { useAuth } from './AuthContext';
@@ -74,7 +74,7 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       const stored = localStorage.getItem(storageKey);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           return parsed;
         }
       }
@@ -105,7 +105,7 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   }, [jobs, storageKey]);
 
-  // Check backend & fetch MongoDB data on load or when user changes
+  // Fetch from MongoDB
   const syncWithMongoDB = async () => {
     setIsSyncing(true);
     try {
@@ -114,11 +114,8 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
       if (health.online) {
         const remoteJobs = await apiService.getJobs();
-        if (Array.isArray(remoteJobs) && remoteJobs.length > 0) {
+        if (Array.isArray(remoteJobs)) {
           setJobs(remoteJobs);
-        } else if (remoteJobs.length === 0 && !user) {
-          // If remote MongoDB is empty for guest, auto-seed with local jobs
-          await apiService.importJobs(jobs);
         }
       }
     } catch (err) {
@@ -176,14 +173,12 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       ]
     };
 
-    // Optimistic local update
     setJobs(prev => [newJob, ...prev]);
 
     if (newJob.status === 'offer') {
       triggerConfetti();
     }
 
-    // Persist to MongoDB
     try {
       if (dbStatus.online) {
         await apiService.createJob(newJob);
@@ -366,10 +361,10 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const resetToSampleData = async () => {
-    setJobs(INITIAL_JOBS);
+    setJobs(SAMPLE_SEED_JOBS);
     try {
       if (dbStatus.online) {
-        await apiService.importJobs(INITIAL_JOBS);
+        await apiService.importJobs(SAMPLE_SEED_JOBS);
       }
     } catch (e) {
       console.error('Error seeding MongoDB:', e);
@@ -379,6 +374,7 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const clearAllData = async () => {
     setJobs([]);
     setSelectedJob(null);
+    localStorage.removeItem(storageKey);
   };
 
   // Filter and Sort calculation
