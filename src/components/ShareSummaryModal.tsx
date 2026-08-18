@@ -18,20 +18,20 @@ export const ShareSummaryModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/50 backdrop-blur-xs animate-fade-in">
       <div 
-        className="relative w-full max-w-lg bg-[#161b22] border border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden"
+        className="relative w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-xl flex flex-col overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-4 border-b border-zinc-800 bg-[#0d1117]/80 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+        <div className="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-xs">
               <Share2 className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white">Share Summary</h2>
-              <p className="text-[11px] text-zinc-400">Formatted update for Telegram, WhatsApp or Discord</p>
+              <h2 className="text-sm font-bold text-slate-900">Share Job Application</h2>
+              <p className="text-[11px] text-slate-500">Formatted update for Telegram, WhatsApp or Discord</p>
             </div>
           </div>
 
@@ -40,19 +40,19 @@ export const ShareSummaryModal: React.FC = () => {
               setIsShareModalOpen(false);
               setSharingJob(null);
             }}
-            className="p-1 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white"
+            className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-400 hover:text-slate-700"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-4 space-y-3 text-xs">
+        <div className="p-5 space-y-4 text-xs bg-slate-50/30">
           <textarea
             rows={10}
             readOnly
             value={summaryText}
-            className="w-full p-3 rounded-lg bg-[#0d1117] border border-zinc-800 text-zinc-200 text-xs font-mono focus:outline-none leading-relaxed"
+            className="w-full p-3.5 rounded-xl bg-white border border-slate-200 text-slate-800 text-xs font-mono focus:outline-none leading-relaxed shadow-2xs"
           />
 
           <div className="flex justify-end gap-2">
@@ -61,22 +61,22 @@ export const ShareSummaryModal: React.FC = () => {
                 setIsShareModalOpen(false);
                 setSharingJob(null);
               }}
-              className="px-3.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:bg-zinc-700 font-medium"
+              className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold"
             >
               Close
             </button>
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-sm transition"
+              className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-sm shadow-indigo-200 transition"
             >
               {copied ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-300" />
+                  <Check className="w-4 h-4 text-white" />
                   <span>Copied to Clipboard!</span>
                 </>
               ) : (
                 <>
-                  <Copy className="w-3.5 h-3.5" />
+                  <Copy className="w-4 h-4" />
                   <span>Copy Summary</span>
                 </>
               )}

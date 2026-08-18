@@ -75,20 +75,20 @@ export const ImportExportModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/50 backdrop-blur-xs animate-fade-in">
       <div 
-        className="relative w-full max-w-lg bg-[#161b22] border border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden"
+        className="relative w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-xl flex flex-col overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-4 border-b border-zinc-800 bg-[#0d1117]/80 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+        <div className="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-xs">
               <FileSpreadsheet className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white">Import & Export</h2>
-              <p className="text-[11px] text-zinc-400">Sync with Google Sheets, Excel or JSON</p>
+              <h2 className="text-sm font-bold text-slate-900">Import & Export Applications</h2>
+              <p className="text-[11px] text-slate-500">Sync with Google Sheets, Excel or JSON files</p>
             </div>
           </div>
 
@@ -97,66 +97,66 @@ export const ImportExportModal: React.FC = () => {
               setIsImportExportOpen(false);
               setImportStatus(null);
             }}
-            className="p-1 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white"
+            className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-400 hover:text-slate-700"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-5 space-y-4 text-xs">
+        <div className="p-5 space-y-4 text-xs bg-slate-50/30">
           
           {/* Status Feedback */}
           {importStatus?.count && (
-            <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/25 flex items-center gap-2 text-emerald-300">
-              <Check className="w-4 h-4 text-emerald-400" />
-              <span>Successfully imported {importStatus.count} jobs into your pipeline!</span>
+            <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-2 text-emerald-800 font-bold">
+              <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>Successfully imported {importStatus.count} applications!</span>
             </div>
           )}
 
           {importStatus?.error && (
-            <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/25 flex items-center gap-2 text-rose-300">
-              <AlertCircle className="w-4 h-4 text-rose-400" />
+            <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 flex items-center gap-2 text-rose-700 font-semibold">
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
               <span>{importStatus.error}</span>
             </div>
           )}
 
           {/* Export Section */}
-          <div className="p-3.5 rounded-lg bg-[#0d1117] border border-zinc-800 space-y-2.5">
-            <h3 className="font-semibold text-zinc-200 flex items-center gap-2">
-              <Download className="w-3.5 h-3.5 text-indigo-400" />
+          <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-2.5 shadow-2xs">
+            <h3 className="font-bold text-slate-900 flex items-center gap-2">
+              <Download className="w-4 h-4 text-indigo-600" />
               <span>Export Applications</span>
             </h3>
-            <p className="text-zinc-400 text-[11px]">
+            <p className="text-slate-500 text-[11px]">
               Download your current pipeline of {jobs.length} jobs to open in Google Sheets or backup.
             </p>
 
             <div className="flex gap-2 pt-1">
               <button
                 onClick={handleExportCSV}
-                className="flex-1 py-1.5 px-3 rounded-lg bg-[#161b22] hover:bg-zinc-800 border border-zinc-800 text-zinc-200 font-medium flex items-center justify-center gap-1.5 transition"
+                className="flex-1 py-2 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 font-bold flex items-center justify-center gap-1.5 transition"
               >
-                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+                <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
                 <span>Export CSV (Sheets)</span>
               </button>
 
               <button
                 onClick={handleExportJSON}
-                className="flex-1 py-1.5 px-3 rounded-lg bg-[#161b22] hover:bg-zinc-800 border border-zinc-800 text-zinc-200 font-medium flex items-center justify-center gap-1.5 transition"
+                className="flex-1 py-2 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 font-bold flex items-center justify-center gap-1.5 transition"
               >
-                <FileText className="w-3.5 h-3.5 text-indigo-400" />
+                <FileText className="w-4 h-4 text-indigo-600" />
                 <span>Export JSON Backup</span>
               </button>
             </div>
           </div>
 
           {/* Import Section */}
-          <div className="p-3.5 rounded-lg bg-[#0d1117] border border-zinc-800 space-y-2.5">
-            <h3 className="font-semibold text-zinc-200 flex items-center gap-2">
-              <Upload className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Import Applications</span>
+          <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-2.5 shadow-2xs">
+            <h3 className="font-bold text-slate-900 flex items-center gap-2">
+              <Upload className="w-4 h-4 text-indigo-600" />
+              <span>Import Existing Applications</span>
             </h3>
-            <p className="text-zinc-400 text-[11px]">
+            <p className="text-slate-500 text-[11px]">
               Upload a previously exported CSV file from sheets or a JSON backup to populate your pipeline.
             </p>
 
@@ -170,7 +170,7 @@ export const ImportExportModal: React.FC = () => {
 
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="w-full py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold flex items-center justify-center gap-2 transition"
+              className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold flex items-center justify-center gap-2 shadow-sm shadow-indigo-200 transition"
             >
               <Upload className="w-4 h-4" />
               <span>Upload CSV / JSON File</span>

@@ -109,17 +109,17 @@ export const JobDetailModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/50 backdrop-blur-xs animate-fade-in">
       <div 
-        className="relative w-full max-w-3xl max-h-[90vh] bg-[#161b22] border border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden"
+        className="relative w-full max-w-3xl max-h-[90vh] bg-white border border-slate-200 rounded-2xl shadow-xl flex flex-col overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-5 border-b border-zinc-800/80 bg-[#0d1117]/80 flex items-start justify-between gap-3 shrink-0">
+        <div className="p-5 border-b border-slate-200 bg-slate-50/70 flex items-start justify-between gap-3 shrink-0">
           <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-base font-bold text-white">{selectedJob.role}</h2>
-              <div className="flex items-center text-amber-400 text-xs">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h2 className="text-base font-bold text-slate-900">{selectedJob.role}</h2>
+              <div className="flex items-center text-amber-500 text-xs">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <button
                     key={i}
@@ -127,21 +127,21 @@ export const JobDetailModal: React.FC = () => {
                     className="p-0.5"
                     title={`Set Priority ${i + 1}`}
                   >
-                    <Star className={`w-3 h-3 ${i < selectedJob.priority ? 'fill-amber-400 text-amber-400' : 'text-zinc-700'}`} />
+                    <Star className={`w-3.5 h-3.5 ${i < selectedJob.priority ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1 text-xs text-zinc-400">
-              <span className="font-semibold text-zinc-200">{selectedJob.company}</span>
+            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1 text-xs text-slate-600">
+              <span className="font-bold text-slate-900">{selectedJob.company}</span>
               <span>•</span>
-              <span className="flex items-center gap-1">
-                <MapPin className="w-3 h-3 text-zinc-500" />
+              <span className="flex items-center gap-1 font-medium">
+                <MapPin className="w-3 h-3 text-slate-400" />
                 {selectedJob.location} ({selectedJob.workMode})
               </span>
               <span>•</span>
-              <span className="text-emerald-400 font-medium">
+              <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                 {formatSalary(selectedJob.salaryMin, selectedJob.salaryMax, selectedJob.salaryCurrency, selectedJob.salaryPeriod)}
               </span>
             </div>
@@ -154,7 +154,7 @@ export const JobDetailModal: React.FC = () => {
                 setSharingJob(selectedJob);
                 setIsShareModalOpen(true);
               }}
-              className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition"
+              className="p-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 transition"
               title="Share summary"
             >
               <Share2 className="w-3.5 h-3.5" />
@@ -165,7 +165,7 @@ export const JobDetailModal: React.FC = () => {
                 href={selectedJob.url}
                 target="_blank"
                 rel="noreferrer"
-                className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-blue-400 transition"
+                className="p-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-blue-600 transition"
                 title="Open job URL"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -174,37 +174,37 @@ export const JobDetailModal: React.FC = () => {
 
             <button
               onClick={() => setSelectedJob(null)}
-              className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition"
+              className="p-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-400 hover:text-slate-700 transition"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
         {/* Stage Switcher Bar */}
-        <div className="px-5 py-2 bg-[#0d1117]/50 border-b border-zinc-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div className="px-5 py-2.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-2">
-            <span className="text-zinc-500">Stage:</span>
+            <span className="text-slate-500 font-medium">Pipeline Stage:</span>
             <select
               value={selectedJob.status}
               onChange={(e) => updateJobStatus(selectedJob.id, e.target.value as JobStatus)}
               aria-label={`Current Pipeline Stage for ${selectedJob.role}`}
-              className={`font-semibold px-2.5 py-0.5 rounded-md border bg-[#161b22] cursor-pointer focus:outline-none ${config.badgeBg}`}
+              className={`font-semibold px-2.5 py-1 rounded-md border cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500 ${config.badgeBg}`}
             >
               {Object.entries(STATUS_CONFIG).map(([key, item]) => (
-                <option key={key} value={key} className="bg-[#161b22] text-zinc-200">
+                <option key={key} value={key} className="bg-white text-slate-800 font-medium">
                   {item.label}
                 </option>
               ))}
             </select>
           </div>
 
-          <div className="flex items-center gap-3 text-zinc-500 text-[11px]">
+          <div className="flex items-center gap-3 text-slate-500 text-[11px] font-medium">
             {selectedJob.dateApplied && (
-              <span>Applied: <strong className="text-zinc-300">{formatDate(selectedJob.dateApplied)}</strong></span>
+              <span>Applied: <strong className="text-slate-800">{formatDate(selectedJob.dateApplied)}</strong></span>
             )}
             {selectedJob.resumeVersion && (
-              <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">
+              <span className="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 font-semibold">
                 Resume: {selectedJob.resumeVersion}
               </span>
             )}
@@ -212,13 +212,13 @@ export const JobDetailModal: React.FC = () => {
         </div>
 
         {/* Tabs Bar */}
-        <div className="flex border-b border-zinc-800 px-5 bg-[#0d1117] shrink-0 text-xs overflow-x-auto">
+        <div className="flex border-b border-slate-200 px-5 bg-white shrink-0 text-xs overflow-x-auto">
           <button
             onClick={() => setActiveTab('jd')}
-            className={`py-2.5 px-3 font-semibold border-b-2 transition flex items-center gap-1.5 shrink-0 ${
+            className={`py-3 px-3.5 font-semibold border-b-2 transition flex items-center gap-1.5 shrink-0 ${
               activeTab === 'jd'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                ? 'border-indigo-600 text-indigo-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
@@ -227,10 +227,10 @@ export const JobDetailModal: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('skills')}
-            className={`py-2.5 px-3 font-semibold border-b-2 transition flex items-center gap-1.5 shrink-0 ${
+            className={`py-3 px-3.5 font-semibold border-b-2 transition flex items-center gap-1.5 shrink-0 ${
               activeTab === 'skills'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                ? 'border-indigo-600 text-indigo-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -239,10 +239,10 @@ export const JobDetailModal: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('interviews')}
-            className={`py-2.5 px-3 font-semibold border-b-2 transition flex items-center gap-1.5 shrink-0 ${
+            className={`py-3 px-3.5 font-semibold border-b-2 transition flex items-center gap-1.5 shrink-0 ${
               activeTab === 'interviews'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                ? 'border-indigo-600 text-indigo-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
             <Clock className="w-3.5 h-3.5" />
@@ -251,10 +251,10 @@ export const JobDetailModal: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('contacts')}
-            className={`py-2.5 px-3 font-semibold border-b-2 transition flex items-center gap-1.5 shrink-0 ${
+            className={`py-3 px-3.5 font-semibold border-b-2 transition flex items-center gap-1.5 shrink-0 ${
               activeTab === 'contacts'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                ? 'border-indigo-600 text-indigo-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
             <User className="w-3.5 h-3.5" />
@@ -263,10 +263,10 @@ export const JobDetailModal: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('history')}
-            className={`py-2.5 px-3 font-semibold border-b-2 transition flex items-center gap-1.5 shrink-0 ${
+            className={`py-3 px-3.5 font-semibold border-b-2 transition flex items-center gap-1.5 shrink-0 ${
               activeTab === 'history'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                ? 'border-indigo-600 text-indigo-600'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
             <History className="w-3.5 h-3.5" />
@@ -275,25 +275,25 @@ export const JobDetailModal: React.FC = () => {
         </div>
 
         {/* Tab Content */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-4 text-xs">
+        <div className="flex-1 overflow-y-auto p-5 space-y-4 text-xs bg-slate-50/40">
           
           {/* TAB 1: Job Description */}
           {activeTab === 'jd' && (
             <div className="space-y-3.5">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-zinc-300">Job Description Details</span>
+                <span className="font-bold text-slate-800">Job Description Details</span>
 
                 {isEditingJD ? (
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setIsEditingJD(false)}
-                      className="px-2.5 py-1 text-xs rounded bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+                      className="px-2.5 py-1 text-xs rounded-md bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleSaveJD}
-                      className="px-3 py-1 text-xs rounded bg-indigo-600 text-white font-medium hover:bg-indigo-500 flex items-center gap-1"
+                      className="px-3 py-1 text-xs rounded-md bg-indigo-600 text-white font-semibold hover:bg-indigo-700 flex items-center gap-1"
                     >
                       <Check className="w-3 h-3" />
                       <span>Save</span>
@@ -305,7 +305,7 @@ export const JobDetailModal: React.FC = () => {
                       setEditedJD(selectedJob.jobDescription || '');
                       setIsEditingJD(true);
                     }}
-                    className="flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300"
+                    className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-700 font-semibold"
                   >
                     <Edit3 className="w-3 h-3" />
                     <span>Edit JD</span>
@@ -318,25 +318,25 @@ export const JobDetailModal: React.FC = () => {
                   value={editedJD}
                   onChange={(e) => setEditedJD(e.target.value)}
                   rows={12}
-                  className="w-full p-3 rounded-lg bg-[#0d1117] border border-zinc-800 text-zinc-200 text-xs font-mono focus:outline-none focus:border-indigo-500 leading-relaxed"
+                  className="w-full p-3.5 rounded-xl bg-white border border-slate-200 text-slate-800 text-xs font-mono focus:outline-none focus:border-indigo-500 leading-relaxed shadow-2xs"
                 />
               ) : (
-                <div className="p-3.5 rounded-lg bg-[#0d1117] border border-zinc-800 text-xs text-zinc-300 leading-relaxed whitespace-pre-wrap font-sans max-h-[350px] overflow-y-auto">
+                <div className="p-4 rounded-xl bg-white border border-slate-200 text-xs text-slate-700 leading-relaxed whitespace-pre-wrap font-sans max-h-[350px] overflow-y-auto shadow-2xs">
                   {selectedJob.jobDescription || 'No job description provided.'}
                 </div>
               )}
 
               {/* Notes */}
               <div>
-                <label className="block text-zinc-400 mb-1 font-medium">
-                  Personal Notes
+                <label className="block text-slate-700 mb-1 font-semibold">
+                  Personal Notes & Strategy
                 </label>
                 <textarea
                   value={selectedJob.notes}
                   onChange={(e) => updateJob(selectedJob.id, { notes: e.target.value })}
                   rows={2}
-                  className="w-full p-2.5 rounded-lg bg-[#0d1117] border border-zinc-800 text-zinc-200 text-xs focus:outline-none focus:border-indigo-500"
-                  placeholder="Notes, interview tips..."
+                  className="w-full p-2.5 rounded-xl bg-white border border-slate-200 text-slate-800 text-xs focus:outline-none focus:border-indigo-500 shadow-2xs"
+                  placeholder="Notes, interview tips, salary strategy..."
                 />
               </div>
             </div>
@@ -345,30 +345,30 @@ export const JobDetailModal: React.FC = () => {
           {/* TAB 2: Skills Match */}
           {activeTab === 'skills' && (
             <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-zinc-400">Match score for this job description:</span>
-                <span className="font-semibold text-indigo-400">
+              <div className="flex justify-between items-center bg-white p-3.5 rounded-xl border border-slate-200">
+                <span className="text-slate-600 font-medium">JD Skill Matching Score:</span>
+                <span className="font-bold text-indigo-600 text-sm">
                   {selectedJob.keySkills.length > 0 ? Math.round(((selectedJob.matchedSkills?.length || 0) / selectedJob.keySkills.length) * 100) : 0}% Match
                 </span>
               </div>
 
               {/* Skills Checklist */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {selectedJob.keySkills.map(skill => {
                   const isMatched = selectedJob.matchedSkills?.includes(skill);
                   return (
                     <div
                       key={skill}
                       onClick={() => toggleSkillMatch(skill)}
-                      className={`p-2.5 rounded-lg border flex items-center justify-between cursor-pointer transition select-none ${
+                      className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition select-none ${
                         isMatched
-                          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                          : 'bg-[#0d1117] border-zinc-800 text-zinc-300 hover:border-zinc-700'
+                          ? 'bg-emerald-50 border-emerald-300 text-emerald-900 shadow-2xs font-semibold'
+                          : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300 shadow-2xs'
                       }`}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2.5">
                         <div className={`w-4 h-4 rounded flex items-center justify-center ${
-                          isMatched ? 'bg-emerald-500 text-black font-bold' : 'border border-zinc-700'
+                          isMatched ? 'bg-emerald-600 text-white font-bold' : 'border border-slate-300 bg-white'
                         }`}>
                           {isMatched && <Check className="w-3 h-3" />}
                         </div>
@@ -380,7 +380,7 @@ export const JobDetailModal: React.FC = () => {
                           e.stopPropagation();
                           removeSkill(skill);
                         }}
-                        className="text-zinc-500 hover:text-rose-400 p-0.5"
+                        className="text-slate-400 hover:text-rose-600 p-0.5"
                       >
                         ✕
                       </button>
@@ -393,16 +393,16 @@ export const JobDetailModal: React.FC = () => {
               <form onSubmit={handleAddNewSkill} className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="Add required skill..."
+                  placeholder="Add another required skill..."
                   value={newSkillInput}
                   onChange={(e) => setNewSkillInput(e.target.value)}
-                  className="flex-1 px-3 py-1.5 text-xs rounded-lg bg-[#0d1117] border border-zinc-800 text-zinc-200 focus:outline-none focus:border-indigo-500"
+                  className="flex-1 px-3 py-2 text-xs rounded-xl bg-white border border-slate-200 text-slate-800 focus:outline-none focus:border-indigo-500 shadow-2xs"
                 />
                 <button
                   type="submit"
-                  className="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
                 >
-                  Add
+                  Add Skill
                 </button>
               </form>
             </div>
@@ -412,62 +412,62 @@ export const JobDetailModal: React.FC = () => {
           {activeTab === 'interviews' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-zinc-300">Interview Timeline</span>
+                <span className="font-bold text-slate-800">Interview Timeline</span>
                 <button
                   onClick={() => setShowAddRound(true)}
-                  className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white"
+                  className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
                 >
-                  <Plus className="w-3 h-3" />
+                  <Plus className="w-3.5 h-3.5" />
                   <span>Log Round</span>
                 </button>
               </div>
 
               {showAddRound && (
-                <form onSubmit={handleAddRoundSubmit} className="p-3.5 rounded-lg bg-[#0d1117] border border-zinc-800 space-y-2.5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <form onSubmit={handleAddRoundSubmit} className="p-4 rounded-xl bg-white border border-slate-200 space-y-3 shadow-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] text-zinc-500 mb-0.5">Round Name *</label>
+                      <label className="block text-[11px] text-slate-600 font-semibold mb-1">Round Name *</label>
                       <input
                         type="text"
                         required
-                        placeholder="e.g. Technical Coding"
+                        placeholder="e.g. System Design Interview"
                         value={roundName}
                         onChange={(e) => setRoundName(e.target.value)}
-                        className="w-full px-2.5 py-1 text-xs rounded bg-[#161b22] border border-zinc-800 text-white focus:outline-none focus:border-indigo-500"
+                        className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] text-zinc-500 mb-0.5">Date *</label>
+                      <label className="block text-[11px] text-slate-600 font-semibold mb-1">Date *</label>
                       <input
                         type="date"
                         required
                         value={roundDate}
                         onChange={(e) => setRoundDate(e.target.value)}
-                        className="w-full px-2.5 py-1 text-xs rounded bg-[#161b22] border border-zinc-800 text-white focus:outline-none focus:border-indigo-500"
+                        className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] text-zinc-500 mb-0.5">Time (Optional)</label>
+                      <label className="block text-[11px] text-slate-600 font-semibold mb-1">Time (Optional)</label>
                       <input
                         type="time"
                         value={roundTime}
                         onChange={(e) => setRoundTime(e.target.value)}
-                        className="w-full px-2.5 py-1 text-xs rounded bg-[#161b22] border border-zinc-800 text-white focus:outline-none focus:border-indigo-500"
+                        className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] text-zinc-500 mb-0.5">Format</label>
+                      <label className="block text-[11px] text-slate-600 font-semibold mb-1">Format</label>
                       <select
                         value={roundFormat}
                         onChange={(e) => setRoundFormat(e.target.value as any)}
-                        className="w-full px-2.5 py-1 text-xs rounded bg-[#161b22] border border-zinc-800 text-white focus:outline-none focus:border-indigo-500"
+                        className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:bg-white focus:border-indigo-500"
                       >
-                        <option value="video">Video Call</option>
+                        <option value="video">Video Call (Zoom/Meet)</option>
                         <option value="phone">Phone Call</option>
-                        <option value="take-home">Take-Home / OA</option>
+                        <option value="take-home">Take-Home Assessment</option>
                         <option value="onsite">On-Site</option>
                       </select>
                     </div>
@@ -477,15 +477,15 @@ export const JobDetailModal: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setShowAddRound(false)}
-                      className="px-2.5 py-1 text-xs rounded bg-zinc-800 text-zinc-400"
+                      className="px-3 py-1.5 text-xs rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="px-3.5 py-1 text-xs font-semibold rounded bg-indigo-600 text-white"
+                      className="px-4 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white"
                     >
-                      Save
+                      Save Round
                     </button>
                   </div>
                 </form>
@@ -493,17 +493,19 @@ export const JobDetailModal: React.FC = () => {
 
               {/* Rounds List */}
               {(!selectedJob.interviewRounds || selectedJob.interviewRounds.length === 0) ? (
-                <p className="text-zinc-500 text-center py-6">No interview stages recorded yet.</p>
+                <div className="p-8 rounded-xl bg-white border border-slate-200 text-center text-slate-500">
+                  No interview stages recorded yet.
+                </div>
               ) : (
                 <div className="space-y-2">
                   {selectedJob.interviewRounds.map((round) => (
                     <div
                       key={round.id}
-                      className="p-3 rounded-lg bg-[#0d1117] border border-zinc-800 flex items-center justify-between"
+                      className="p-3.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between shadow-2xs"
                     >
                       <div>
-                        <div className="font-semibold text-zinc-200">{round.name}</div>
-                        <div className="text-[11px] text-zinc-500 mt-0.5">
+                        <div className="font-bold text-slate-900">{round.name}</div>
+                        <div className="text-[11px] text-slate-500 mt-0.5 font-medium">
                           📅 {formatDate(round.date)} {round.time && `at ${round.time}`}
                         </div>
                       </div>
@@ -513,7 +515,7 @@ export const JobDetailModal: React.FC = () => {
                           value={round.status}
                           onChange={(e) => updateInterviewRound(selectedJob.id, round.id, { status: e.target.value as any })}
                           aria-label={`Status for ${round.name}`}
-                          className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#161b22] border border-zinc-700 text-zinc-300 focus:outline-none"
+                          className="text-[11px] font-semibold px-2.5 py-1 rounded-md bg-slate-50 border border-slate-200 text-slate-800 focus:outline-none"
                         >
                           <option value="scheduled">Scheduled</option>
                           <option value="passed">Passed</option>
@@ -523,9 +525,9 @@ export const JobDetailModal: React.FC = () => {
 
                         <button
                           onClick={() => deleteInterviewRound(selectedJob.id, round.id)}
-                          className="p-1 text-zinc-500 hover:text-rose-400"
+                          className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50"
                         >
-                          <Trash2 className="w-3 h-3" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
@@ -538,30 +540,30 @@ export const JobDetailModal: React.FC = () => {
           {/* TAB 4: Contacts */}
           {activeTab === 'contacts' && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="p-3.5 rounded-lg bg-[#0d1117] border border-zinc-800 space-y-2">
-                <h4 className="font-semibold text-zinc-200">Recruiter Contact</h4>
+              <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-2.5 shadow-2xs">
+                <h4 className="font-bold text-slate-900">Recruiter Contact</h4>
                 <input
                   type="text"
-                  placeholder="Name"
+                  placeholder="Recruiter Name"
                   value={selectedJob.recruiterContact?.name || ''}
                   onChange={(e) => updateJob(selectedJob.id, {
                     recruiterContact: { ...(selectedJob.recruiterContact || { name: '' }), name: e.target.value }
                   })}
-                  className="w-full px-2.5 py-1 text-xs rounded bg-[#161b22] border border-zinc-800 text-white"
+                  className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 border border-slate-200 text-slate-900"
                 />
                 <input
                   type="email"
-                  placeholder="Email"
+                  placeholder="Recruiter Email"
                   value={selectedJob.recruiterContact?.email || ''}
                   onChange={(e) => updateJob(selectedJob.id, {
                     recruiterContact: { ...(selectedJob.recruiterContact || { name: '' }), email: e.target.value }
                   })}
-                  className="w-full px-2.5 py-1 text-xs rounded bg-[#161b22] border border-zinc-800 text-white"
+                  className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 border border-slate-200 text-slate-900"
                 />
               </div>
 
-              <div className="p-3.5 rounded-lg bg-[#0d1117] border border-zinc-800 space-y-2">
-                <h4 className="font-semibold text-zinc-200">Internal Referral</h4>
+              <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-2.5 shadow-2xs">
+                <h4 className="font-bold text-slate-900">Internal Referral</h4>
                 <input
                   type="text"
                   placeholder="Referrer Name"
@@ -569,7 +571,7 @@ export const JobDetailModal: React.FC = () => {
                   onChange={(e) => updateJob(selectedJob.id, {
                     referralContact: { ...(selectedJob.referralContact || { name: '' }), name: e.target.value }
                   })}
-                  className="w-full px-2.5 py-1 text-xs rounded bg-[#161b22] border border-zinc-800 text-white"
+                  className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 border border-slate-200 text-slate-900"
                 />
                 <input
                   type="email"
@@ -578,7 +580,7 @@ export const JobDetailModal: React.FC = () => {
                   onChange={(e) => updateJob(selectedJob.id, {
                     referralContact: { ...(selectedJob.referralContact || { name: '' }), email: e.target.value }
                   })}
-                  className="w-full px-2.5 py-1 text-xs rounded bg-[#161b22] border border-zinc-800 text-white"
+                  className="w-full px-3 py-1.5 text-xs rounded-lg bg-slate-50 border border-slate-200 text-slate-900"
                 />
               </div>
             </div>
@@ -586,11 +588,11 @@ export const JobDetailModal: React.FC = () => {
 
           {/* TAB 5: History */}
           {activeTab === 'history' && (
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {selectedJob.history?.map((event, idx) => (
-                <div key={idx} className="text-xs text-zinc-400 p-2 rounded bg-[#0d1117] border border-zinc-800/80 flex items-center justify-between">
-                  <span>{event.date} — <strong className="text-zinc-200 uppercase">{event.status}</strong></span>
-                  {event.note && <span className="text-zinc-500 italic">{event.note}</span>}
+                <div key={idx} className="text-xs p-3 rounded-xl bg-white border border-slate-200 flex items-center justify-between shadow-2xs">
+                  <span className="text-slate-800 font-medium">{event.date} — <strong className="text-indigo-600 uppercase font-bold">{event.status}</strong></span>
+                  {event.note && <span className="text-slate-500 italic">{event.note}</span>}
                 </div>
               ))}
             </div>
@@ -599,21 +601,21 @@ export const JobDetailModal: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="p-3.5 border-t border-zinc-800 bg-[#0d1117]/80 flex items-center justify-between text-xs shrink-0">
+        <div className="p-4 border-t border-slate-200 bg-white flex items-center justify-between text-xs shrink-0">
           <button
             onClick={() => {
               if (confirm(`Delete application for ${selectedJob.role} at ${selectedJob.company}?`)) {
                 deleteJob(selectedJob.id);
               }
             }}
-            className="text-rose-400 hover:text-rose-300 font-medium"
+            className="text-rose-600 hover:text-rose-700 font-bold"
           >
-            Delete Job
+            Delete Application
           </button>
 
           <button
             onClick={() => setSelectedJob(null)}
-            className="px-4 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white font-medium transition"
+            className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold transition"
           >
             Close
           </button>

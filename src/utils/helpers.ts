@@ -10,58 +10,58 @@ export const STATUS_CONFIG: Record<JobStatus, {
 }> = {
   wishlist: {
     label: 'Wishlist',
-    badgeBg: 'bg-zinc-800/80 text-zinc-300 border-zinc-700/60',
-    badgeText: 'text-zinc-300',
-    borderColor: 'border-zinc-700/50',
-    dotColor: 'bg-zinc-400',
+    badgeBg: 'bg-slate-100 text-slate-700 border-slate-200',
+    badgeText: 'text-slate-700',
+    borderColor: 'border-slate-300',
+    dotColor: 'bg-slate-500',
     description: 'Saved roles to apply to'
   },
   applied: {
     label: 'Applied',
-    badgeBg: 'bg-blue-500/10 text-blue-400 border-blue-500/25',
-    badgeText: 'text-blue-400',
-    borderColor: 'border-blue-500/30',
-    dotColor: 'bg-blue-400',
+    badgeBg: 'bg-blue-50 text-blue-700 border-blue-200',
+    badgeText: 'text-blue-700',
+    borderColor: 'border-blue-300',
+    dotColor: 'bg-blue-600',
     description: 'Application submitted'
   },
   oa: {
     label: 'Assessment (OA)',
-    badgeBg: 'bg-amber-500/10 text-amber-400 border-amber-500/25',
-    badgeText: 'text-amber-400',
-    borderColor: 'border-amber-500/30',
-    dotColor: 'bg-amber-400',
+    badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
+    badgeText: 'text-amber-700',
+    borderColor: 'border-amber-300',
+    dotColor: 'bg-amber-500',
     description: 'Online assessment / Take-home'
   },
   interview: {
     label: 'Interviewing',
-    badgeBg: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/25',
-    badgeText: 'text-indigo-400',
-    borderColor: 'border-indigo-500/30',
-    dotColor: 'bg-indigo-400',
+    badgeBg: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+    badgeText: 'text-indigo-700',
+    borderColor: 'border-indigo-300',
+    dotColor: 'bg-indigo-600',
     description: 'Interview rounds in progress'
   },
   offer: {
-    label: 'Offer',
-    badgeBg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25',
-    badgeText: 'text-emerald-400',
-    borderColor: 'border-emerald-500/30',
-    dotColor: 'bg-emerald-400',
+    label: 'Offer Received 🎉',
+    badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-300 font-semibold',
+    badgeText: 'text-emerald-700',
+    borderColor: 'border-emerald-400',
+    dotColor: 'bg-emerald-600',
     description: 'Official offer received'
   },
   rejected: {
     label: 'Rejected',
-    badgeBg: 'bg-zinc-800/50 text-zinc-400 border-zinc-700/40',
-    badgeText: 'text-zinc-400',
-    borderColor: 'border-zinc-700/40',
-    dotColor: 'bg-zinc-500',
+    badgeBg: 'bg-rose-50 text-rose-700 border-rose-200',
+    badgeText: 'text-rose-700',
+    borderColor: 'border-rose-200',
+    dotColor: 'bg-rose-500',
     description: 'Application not selected'
   },
   archived: {
     label: 'Archived',
-    badgeBg: 'bg-zinc-800/40 text-zinc-500 border-zinc-800',
-    badgeText: 'text-zinc-500',
-    borderColor: 'border-zinc-800',
-    dotColor: 'bg-zinc-600',
+    badgeBg: 'bg-zinc-100 text-zinc-600 border-zinc-200',
+    badgeText: 'text-zinc-600',
+    borderColor: 'border-zinc-300',
+    dotColor: 'bg-zinc-400',
     description: 'Closed or withdrawn'
   }
 };

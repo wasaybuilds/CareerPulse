@@ -30,13 +30,13 @@ export const CalendarView: React.FC = () => {
   const getFormatIcon = (format?: string) => {
     switch (format) {
       case 'video':
-        return <Video className="w-3.5 h-3.5 text-indigo-400" />;
+        return <Video className="w-4 h-4 text-indigo-600" />;
       case 'phone':
-        return <Phone className="w-3.5 h-3.5 text-cyan-400" />;
+        return <Phone className="w-4 h-4 text-blue-600" />;
       case 'take-home':
-        return <FileCode className="w-3.5 h-3.5 text-amber-400" />;
+        return <FileCode className="w-4 h-4 text-amber-600" />;
       default:
-        return <Building2 className="w-3.5 h-3.5 text-zinc-400" />;
+        return <Building2 className="w-4 h-4 text-slate-600" />;
     }
   };
 
@@ -46,71 +46,71 @@ export const CalendarView: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
-            <CalendarIcon className="w-4 h-4 text-indigo-400" />
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <CalendarIcon className="w-4 h-4 text-indigo-600" />
             <span>Interview Schedule & Deadlines</span>
           </h2>
-          <p className="text-xs text-zinc-400 mt-0.5">
-            Upcoming rounds, screenings, and take-home deadlines
+          <p className="text-xs text-slate-500 mt-0.5">
+            Upcoming interview rounds, coding assessments, and take-home deadlines
           </p>
         </div>
 
-        <div className="px-2.5 py-1 rounded-md bg-[#161b22] border border-zinc-800 text-zinc-300 text-xs font-semibold">
-          {upcomingEvents.length} Scheduled
+        <div className="px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold">
+          {upcomingEvents.length} Upcoming
         </div>
       </div>
 
-      {/* Upcoming */}
-      <div className="space-y-2.5">
-        <h3 className="text-xs font-semibold text-zinc-400 flex items-center gap-1.5">
-          <Clock className="w-3 h-3 text-indigo-400" />
-          <span>Upcoming</span>
+      {/* Upcoming Section */}
+      <div className="space-y-3">
+        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+          <Clock className="w-3.5 h-3.5 text-indigo-600" />
+          <span>Scheduled Interviews</span>
         </h3>
 
         {upcomingEvents.length === 0 ? (
-          <div className="p-8 rounded-xl bg-[#161b22] border border-zinc-800 text-center">
-            <p className="text-xs font-medium text-zinc-400">No interviews currently scheduled</p>
-            <p className="text-[11px] text-zinc-500 mt-0.5">
+          <div className="p-8 rounded-xl bg-white border border-slate-200 text-center shadow-2xs">
+            <p className="text-xs font-bold text-slate-700">No interviews currently scheduled</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">
               Add upcoming rounds inside any job details modal.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-2.5">
+          <div className="grid grid-cols-1 gap-3">
             {upcomingEvents.map(({ job, round }) => (
               <div
                 key={round.id}
                 onClick={() => setSelectedJob(job)}
-                className="p-3.5 rounded-xl bg-[#161b22] border border-zinc-800/80 hover:border-zinc-700 transition cursor-pointer flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+                className="p-4 rounded-xl bg-white border border-slate-200 hover:border-indigo-300 hover:shadow-md transition cursor-pointer flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#0d1117] border border-zinc-800 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
                     {getFormatIcon(round.format)}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="font-semibold text-zinc-100 text-xs hover:text-indigo-400 transition">
+                      <h4 className="font-bold text-slate-900 text-xs hover:text-indigo-600 transition">
                         {round.name}
                       </h4>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 capitalize">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold capitalize border border-slate-200">
                         {round.format || 'Interview'}
                       </span>
                     </div>
-                    <p className="text-[11px] text-zinc-400 mt-0.5">
-                      <strong className="text-zinc-300">{job.role}</strong> at <strong className="text-zinc-300">{job.company}</strong>
+                    <p className="text-[11px] text-slate-600 mt-0.5">
+                      <strong className="text-slate-900">{job.role}</strong> at <strong className="text-slate-900">{job.company}</strong>
                     </p>
                     {round.interviewer && (
-                      <p className="text-[11px] text-zinc-500 mt-0.5">
-                        Interviewer: <span className="text-zinc-400">{round.interviewer}</span>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        Interviewer: <span className="text-slate-700 font-medium">{round.interviewer}</span>
                       </p>
                     )}
                   </div>
                 </div>
 
                 <div className="flex sm:flex-col sm:items-end justify-between items-center shrink-0">
-                  <span className="text-xs font-semibold text-zinc-200">
+                  <span className="text-xs font-bold text-slate-800">
                     {formatDate(round.date)} {round.time && `at ${round.time}`}
                   </span>
-                  <span className="text-[10px] text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20 mt-0.5">
+                  <span className="text-[10px] text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-200 font-bold mt-1">
                     Scheduled
                   </span>
                 </div>
@@ -122,10 +122,10 @@ export const CalendarView: React.FC = () => {
 
       {/* Past Completed */}
       {pastEvents.length > 0 && (
-        <div className="space-y-2.5 pt-3">
-          <h3 className="text-xs font-semibold text-zinc-400 flex items-center gap-1.5">
-            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-            <span>Past History</span>
+        <div className="space-y-3 pt-3">
+          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Past Interview History</span>
           </h3>
 
           <div className="grid grid-cols-1 gap-2">
@@ -133,30 +133,30 @@ export const CalendarView: React.FC = () => {
               <div
                 key={round.id}
                 onClick={() => setSelectedJob(job)}
-                className="p-3 rounded-lg bg-[#161b22]/60 border border-zinc-800/60 hover:bg-[#161b22] transition cursor-pointer flex items-center justify-between text-xs"
+                className="p-3 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 transition cursor-pointer flex items-center justify-between text-xs"
               >
-                <div className="flex items-center gap-2.5">
-                  <div className="w-6 h-6 rounded bg-[#0d1117] border border-zinc-800 flex items-center justify-center shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
                     {getFormatIcon(round.format)}
                   </div>
                   <div>
-                    <div className="font-medium text-zinc-300">
-                      {round.name} · <span className="text-zinc-500">{job.company}</span>
+                    <div className="font-semibold text-slate-800">
+                      {round.name} · <span className="text-slate-500 font-normal">{job.company}</span>
                     </div>
-                    <div className="text-[10px] text-zinc-500">
+                    <div className="text-[10px] text-slate-400 font-medium">
                       {formatDate(round.date)}
                     </div>
                   </div>
                 </div>
 
-                <span className={`text-[10px] font-medium px-2 py-0.2 rounded border ${
+                <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-md border ${
                   round.status === 'passed'
-                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                     : round.status === 'failed'
-                    ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
-                    : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                    ? 'bg-rose-50 text-rose-700 border-rose-200'
+                    : 'bg-slate-100 text-slate-700 border-slate-200'
                 }`}>
-                  {round.status}
+                  {round.status.toUpperCase()}
                 </span>
               </div>
             ))}
