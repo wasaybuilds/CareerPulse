@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { JobProvider, useJobs } from './context/JobContext';
-import { Header } from './components/Header';
-import { FilterBar } from './components/FilterBar';
+import { Sidebar } from './components/Sidebar';
+import { TopNav } from './components/TopNav';
 import { KanbanBoard } from './components/KanbanBoard';
 import { TableView } from './components/TableView';
 import { AnalyticsDashboard } from './components/AnalyticsDashboard';
@@ -14,24 +14,29 @@ import { ImportExportModal } from './components/ImportExportModal';
 
 const AppContent: React.FC = () => {
   const { viewMode } = useJobs();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
-      {/* Header with quick stats, search, view switcher, and quick add buttons */}
-      <Header />
+    <div className="flex h-screen bg-[#0b0e14] text-zinc-100 font-sans selection:bg-indigo-500 selection:text-white overflow-hidden">
+      
+      {/* SaaS Left Sidebar Navigation */}
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
-      {/* Filter and Sort bar (hidden in analytics and calendar views if desired, or active for table & kanban) */}
-      {(viewMode === 'kanban' || viewMode === 'table') && (
-        <FilterBar />
-      )}
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+        
+        {/* Top Navbar */}
+        <TopNav onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
-      {/* Main View Container */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        {viewMode === 'kanban' && <KanbanBoard />}
-        {viewMode === 'table' && <TableView />}
-        {viewMode === 'analytics' && <AnalyticsDashboard />}
-        {viewMode === 'calendar' && <CalendarView />}
-      </main>
+        {/* View Switcher Container */}
+        <main className="flex-1 flex flex-col overflow-y-auto min-h-0 bg-[#0d1017]">
+          {viewMode === 'table' && <TableView />}
+          {viewMode === 'kanban' && <KanbanBoard />}
+          {viewMode === 'analytics' && <AnalyticsDashboard />}
+          {viewMode === 'calendar' && <CalendarView />}
+        </main>
+
+      </div>
 
       {/* Modals & Dialogs */}
       <JobDetailModal />
