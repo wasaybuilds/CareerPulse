@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, X, Check } from 'lucide-react';
+import { Sparkles, X, Check, Link2 } from 'lucide-react';
 import { useJobs } from '../context/JobContext';
 import { parseJobDescriptionText } from '../utils/helpers';
 import type { JobStatus, WorkMode } from '../types/job';
@@ -14,6 +14,10 @@ export const SmartPasteModal: React.FC = () => {
   const handleParse = () => {
     if (!rawText.trim()) return;
     const result = parseJobDescriptionText(rawText);
+
+    // Check if rawText contains a URL
+    const urlMatch = rawText.match(/https?:\/\/[^\s]+/i);
+
     setParsedData({
       company: result.company || 'Unknown Company',
       role: result.role || 'Software Engineer',
@@ -24,12 +28,18 @@ export const SmartPasteModal: React.FC = () => {
       salaryCurrency: result.salaryCurrency || 'USD',
       keySkills: result.keySkills || [],
       status: 'wishlist' as JobStatus,
+      url: urlMatch ? urlMatch[0] : '',
       jobDescription: rawText.trim()
     });
   };
 
   const handleSave = async () => {
     if (!parsedData) return;
+
+    let formattedUrl = parsedData.url?.trim();
+    if (formattedUrl && !formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
+      formattedUrl = `https://${formattedUrl}`;
+    }
 
     const newJob = await addJob({
       company: parsedData.company,
@@ -43,6 +53,7 @@ export const SmartPasteModal: React.FC = () => {
       salaryMax: parsedData.salaryMax,
       salaryCurrency: parsedData.salaryCurrency,
       salaryPeriod: 'year',
+      url: formattedUrl || undefined,
       source: 'Smart Paste',
       jobDescription: parsedData.jobDescription,
       keySkills: parsedData.keySkills,
@@ -206,6 +217,21 @@ Requirements: React, TypeScript, GraphQL, Next.js, Node.js`}
                     className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 font-bold"
                   />
                 </div>
+              </div>
+
+              {/* Job URL Field */}
+              <div>
+                <label className="block text-slate-600 font-bold mb-1 flex items-center gap-1.5">
+                  <Link2 className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Job Application URL / Posting Link</span>
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://linkedin.com/jobs/view/... or careers site link"
+                  value={parsedData.url || ''}
+                  onChange={(e) => setParsedData({ ...parsedData, url: e.target.value })}
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 focus:outline-none focus:border-indigo-500"
+                />
               </div>
 
               {/* Detected Skills */}

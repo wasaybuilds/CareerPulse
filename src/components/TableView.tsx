@@ -313,16 +313,33 @@ export const TableView: React.FC = () => {
                               <Share2 className="w-3.5 h-3.5" />
                             </button>
 
-                            {job.url && (
+                            {job.url ? (
                               <a
                                 href={job.url}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition"
-                                title="Open Job Link"
+                                className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition"
+                                title={`Open URL: ${job.url}`}
                               >
                                 <ExternalLink className="w-3.5 h-3.5" />
                               </a>
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  const url = prompt(`Paste Job Application Link for ${job.role} at ${job.company}:`);
+                                  if (url && url.trim()) {
+                                    let formatted = url.trim();
+                                    if (!formatted.startsWith('http://') && !formatted.startsWith('https://')) {
+                                      formatted = `https://${formatted}`;
+                                    }
+                                    updateJob(job.id, { url: formatted });
+                                  }
+                                }}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition"
+                                title="Add Job URL"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5 opacity-50 hover:opacity-100" />
+                              </button>
                             )}
 
                             <button
