@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Star, 
   ExternalLink, 
@@ -8,8 +8,10 @@ import {
   FileText, 
   Clock, 
   Plus, 
-  Building2,
-  Briefcase
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight
 } from 'lucide-react';
 import { useJobs } from '../context/JobContext';
 import type { JobStatus } from '../types/job';
@@ -28,6 +30,29 @@ export const TableView: React.FC = () => {
     filters,
     setFilters
   } = useJobs();
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  // Reset to page 1 when filters or dataset changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters, filteredJobs.length]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredJobs.length / pageSize));
+
+  // Ensure currentPage doesn't exceed totalPages
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
+
+  const paginatedJobs = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return filteredJobs.slice(startIndex, startIndex + pageSize);
+  }, [filteredJobs, currentPage, pageSize]);
 
   const getCompanyInitial = (name: string) => {
     return (name || 'C').charAt(0).toUpperCase();
@@ -49,6 +74,26 @@ export const TableView: React.FC = () => {
     }
     return colors[Math.abs(hash) % colors.length];
   };
+
+  // Generate visible page numbers
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      if (currentPage <= 3) {
+        pages.push(1, 2, 3, 4, '...', totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+      }
+    }
+    return pages;
+  };
+
+  const startRecord = filteredJobs.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endRecord = Math.min(currentPage * pageSize, filteredJobs.length);
 
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-[#f8fafc]">
@@ -125,7 +170,7 @@ export const TableView: React.FC = () => {
       </div>
 
       {/* Main Table Grid Container */}
-      <div className="flex-1 overflow-auto p-4 sm:p-6">
+      <div className="flex-1 overflow-auto p-4 sm:p-6 flex flex-col">
         {filteredJobs.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center p-12 text-center bg-white rounded-2xl border border-slate-200 shadow-2xs">
             <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 mb-3 border border-indigo-100">
@@ -146,7 +191,7 @@ export const TableView: React.FC = () => {
             </button>
           </div>
         ) : (
-          <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-2xs">
+          <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-2xs flex flex-col">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs text-slate-700 border-collapse">
                 
@@ -168,7 +213,8 @@ export const TableView: React.FC = () => {
 
                 {/* Table Body */}
                 <tbody className="divide-y divide-slate-100">
-                  {filteredJobs.map((job, idx) => {
+                  {paginatedJobs.map((job, idx) => {
+                    const globalIndex = (currentPage - 1) * pageSize + idx + 1;
                     const config = STATUS_CONFIG[job.status];
                     const upcomingInterview = job.interviewRounds?.find(r => r.status === 'scheduled');
                     const avatarColorClass = getCompanyAvatarColor(job.company);
@@ -181,7 +227,7 @@ export const TableView: React.FC = () => {
                       >
                         {/* Index */}
                         <td className="py-3.5 px-3 text-center text-[11px] text-slate-400 font-mono">
-                          {idx + 1}
+                          {globalIndex}
                         </td>
 
                         {/* Company & Role with Avatar */}
@@ -368,22 +414,96 @@ export const TableView: React.FC = () => {
               </table>
             </div>
 
-            {/* Table Footer Summary Bar */}
-            <div className="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 font-medium">
-              <div>
-                Showing <strong className="text-slate-800">{filteredJobs.length}</strong> of <strong className="text-slate-800">{jobs.length}</strong> total applications
-              </div>
+            {/* Table Footer with Full Pagination Bar */}
+            <div className="p-3.5 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600 font-medium">
+              
+              {/* Left: Records summary & Page size picker */}
               <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1.5">
-                  <Briefcase className="w-3.5 h-3.5 text-slate-400" />
-                  <span>{jobs.filter(j => j.status === 'applied').length} Active Submissions</span>
+                <span>
+                  Showing <strong className="text-slate-900">{startRecord}–{endRecord}</strong> of <strong className="text-slate-900">{filteredJobs.length}</strong> applications
                 </span>
-                <span>•</span>
-                <span className="flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-slate-400" />
-                  <span>{new Set(jobs.map(j => j.company)).size} Unique Companies</span>
-                </span>
+
+                <div className="flex items-center gap-1.5 border-l border-slate-300 pl-3">
+                  <span className="text-slate-500 text-[11px]">Rows per page:</span>
+                  <select
+                    value={pageSize}
+                    onChange={(e) => {
+                      setPageSize(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                    aria-label="Rows per page"
+                    className="px-2 py-1 rounded-md bg-white border border-slate-200 text-slate-800 text-xs font-semibold focus:outline-none focus:border-indigo-500"
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                  </select>
+                </div>
               </div>
+
+              {/* Right: Page Navigation Buttons */}
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 disabled:opacity-40 disabled:pointer-events-none transition"
+                  title="First Page"
+                >
+                  <ChevronsLeft className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 disabled:opacity-40 disabled:pointer-events-none transition"
+                  title="Previous Page"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+
+                {/* Page number buttons */}
+                <div className="flex items-center gap-1 px-1">
+                  {getPageNumbers().map((num, i) => (
+                    <React.Fragment key={i}>
+                      {num === '...' ? (
+                        <span className="px-2 text-slate-400 text-xs">…</span>
+                      ) : (
+                        <button
+                          onClick={() => setCurrentPage(Number(num))}
+                          className={`w-7 h-7 rounded-lg text-xs font-bold transition flex items-center justify-center ${
+                            currentPage === num
+                              ? 'bg-indigo-600 text-white shadow-xs'
+                              : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                          }`}
+                        >
+                          {num}
+                        </button>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages || totalPages === 0}
+                  className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 disabled:opacity-40 disabled:pointer-events-none transition"
+                  title="Next Page"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages || totalPages === 0}
+                  className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 disabled:opacity-40 disabled:pointer-events-none transition"
+                  title="Last Page"
+                >
+                  <ChevronsRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
             </div>
 
           </div>
