@@ -1,6 +1,12 @@
 import type { JobApplication } from '../types/job';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+// In production on Vercel, requests to '/api' are handled by the serverless function.
+// In local dev, it connects to localhost:5000 or custom VITE_API_URL.
+const API_BASE_URL = import.meta.env.VITE_API_URL || (
+  typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+    ? '/api'
+    : 'http://localhost:5000/api'
+);
 
 export interface DbStatus {
   online: boolean;

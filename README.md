@@ -1,36 +1,35 @@
-# 🍉 CareerPulse — Full-Stack Job Application & JD Tracker (MongoDB + Watermelon UI)
+# 🍉 CareerPulse — Modern Job Application & Interview OS (MongoDB + Full-Stack)
 
-**CareerPulse** is a production-ready, full-stack Job Application & JD Management Command Center built with a **Watermelon UI** design system (vibrant watermelon crimson/coral, fresh mint rind emerald, obsidian dark mode) and backed by **MongoDB Atlas** with a local-first offline sync engine.
-
----
-
-## 💡 Recommended Repository Names
-If you're creating a GitHub repository, here are recommended names ranked by impact:
-1. **`career-pulse`** (⭐ **Recommended** — Clean, modern, SaaS-grade)
-2. **`watermelon-job-tracker`** (Playful & memorable, matches your UI theme)
-3. **`applied-pro`** (Concise & professional)
-4. **`job-flow-hub`** (Focuses on workflow & pipeline)
+**CareerPulse** is a production-ready, full-stack Job Application & Interview Management Command Center built with React 19, TypeScript, Express, and **MongoDB Atlas** with a local-first offline sync engine.
 
 ---
 
-## 🛠️ Step-by-Step GitHub Setup & Push
+## 🚀 1-Click Vercel Deployment
+
+CareerPulse is configured to deploy directly to **Vercel** with both the Frontend and Serverless MongoDB Backend in a single project.
+
+### Steps to Deploy on Vercel:
+
+1. Go to **[vercel.com](https://vercel.com)** and click **"Add New" ➔ "Project"**.
+2. Import your GitHub repository: `https://github.com/wasaybuilds/CareerPulse`.
+3. Under **Environment Variables**, add:
+   - **Key**: `MONGODB_URI`
+   - **Value**: `mongodb+srv://wasaya670_db_user:cocFh2zs7i5DGwAE@<YOUR_CLUSTER>.mongodb.net/jobapplied?retryWrites=true&w=majority`
+4. Click **Deploy**! 🚀
+
+---
+
+## 🛠️ Step-by-Step GitHub Setup
 
 ```bash
-# 1. Initialize git (if not already initialized)
-git init
-
-# 2. Stage all files (.env is safely ignored in .gitignore)
+# 1. Stage all changes (.env is safely ignored in .gitignore)
 git add .
 
-# 3. Create your first commit
-git commit -m "feat: initial release of CareerPulse with MongoDB & Watermelon UI"
+# 2. Commit changes
+git commit -m "feat: add Vercel serverless deployment support"
 
-# 4. Set main branch
-git branch -M main
-
-# 5. Link to your GitHub repo and push
-git remote add origin https://github.com/<YOUR_USERNAME>/career-pulse.git
-git push -u origin main
+# 3. Push to GitHub
+git push origin main
 ```
 
 ---
@@ -48,22 +47,22 @@ MONGODB_URI=mongodb+srv://wasaya670_db_user:cocFh2zs7i5DGwAE@<YOUR_CLUSTER>.mong
 
 ---
 
-## 🚀 How to Run Locally
+## 💻 How to Run Locally
 
 ```bash
 # Starts both the Express MongoDB API (Port 5000) and React Vite (Port 5173) concurrently
 npm run dev
 ```
 
-Visit: **`http://localhost:5173`**
-API Health Check: **`http://localhost:5000/api/health`**
+- **Frontend App**: `http://localhost:5173`
+- **Backend API**: `http://localhost:5000/api/health`
 
 ---
 
 ## ✨ Features
 
-- **🍉 Watermelon UI Theme**: Vibrant crimson, mint/emerald accents, obsidian cards, neon glows.
-- **📊 7-Stage Pipeline (Kanban + Table)**: Drag & drop, 1-click status progression, offer celebration confetti.
+- **📊 Applications Table View (Default)**: Spreadsheet grid with company avatars, in-line stage changers, salary badges, and quick actions.
+- **📋 7-Stage Pipeline (Kanban Board)**: Drag & drop, 1-click status progression, offer celebration confetti.
 - **📝 JD Vault & Skills Match Score**: Full Job Description archive with interactive matched skills checklist.
 - **⚡ Smart Paste Auto-Extractor**: Paste any job description to extract Company, Role, Location, Salary, and Skills.
 - **📅 Interview Timeline & Calendar**: Live countdowns and logs for technical screens, take-homes, and onsite rounds.
