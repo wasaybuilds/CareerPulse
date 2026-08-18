@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, X, Check, Link2 } from 'lucide-react';
+import { Sparkles, X, Check, Link2, Loader2 } from 'lucide-react';
 import { useJobs } from '../context/JobContext';
 import { parseJobDescriptionText } from '../utils/helpers';
 import type { JobStatus, WorkMode } from '../types/job';
@@ -8,12 +8,14 @@ export const SmartPasteModal: React.FC = () => {
   const { isSmartPasteOpen, setIsSmartPasteOpen, addJob, setSelectedJob } = useJobs();
   const [rawText, setRawText] = useState('');
   const [parsedData, setParsedData] = useState<any | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Reset modal state every time it opens
   useEffect(() => {
     if (isSmartPasteOpen) {
       setRawText('');
       setParsedData(null);
+      setIsSaving(false);
     }
   }, [isSmartPasteOpen]);
 
@@ -42,40 +44,47 @@ export const SmartPasteModal: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (!parsedData) return;
+    if (!parsedData || isSaving) return;
 
-    let formattedUrl = parsedData.url?.trim();
-    if (formattedUrl && !formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
-      formattedUrl = `https://${formattedUrl}`;
+    setIsSaving(true);
+    try {
+      let formattedUrl = parsedData.url?.trim();
+      if (formattedUrl && !formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
+        formattedUrl = `https://${formattedUrl}`;
+      }
+
+      const newJob = await addJob({
+        company: parsedData.company,
+        role: parsedData.role,
+        location: parsedData.location,
+        workMode: parsedData.workMode,
+        jobType: 'full-time',
+        status: parsedData.status,
+        dateApplied: parsedData.status === 'applied' ? new Date().toISOString().split('T')[0] : undefined,
+        salaryMin: parsedData.salaryMin,
+        salaryMax: parsedData.salaryMax,
+        salaryCurrency: parsedData.salaryCurrency,
+        salaryPeriod: 'year',
+        url: formattedUrl || undefined,
+        source: 'Smart Paste',
+        jobDescription: parsedData.jobDescription,
+        keySkills: parsedData.keySkills,
+        matchedSkills: [],
+        interviewRounds: [],
+        notes: 'Imported via Smart JD Parser',
+        priority: 4,
+        tags: ['Smart Extracted']
+      });
+
+      setIsSmartPasteOpen(false);
+      setRawText('');
+      setParsedData(null);
+      setSelectedJob(newJob);
+    } catch (err) {
+      console.error('Error saving extracted job:', err);
+    } finally {
+      setIsSaving(false);
     }
-
-    const newJob = await addJob({
-      company: parsedData.company,
-      role: parsedData.role,
-      location: parsedData.location,
-      workMode: parsedData.workMode,
-      jobType: 'full-time',
-      status: parsedData.status,
-      dateApplied: parsedData.status === 'applied' ? new Date().toISOString().split('T')[0] : undefined,
-      salaryMin: parsedData.salaryMin,
-      salaryMax: parsedData.salaryMax,
-      salaryCurrency: parsedData.salaryCurrency,
-      salaryPeriod: 'year',
-      url: formattedUrl || undefined,
-      source: 'Smart Paste',
-      jobDescription: parsedData.jobDescription,
-      keySkills: parsedData.keySkills,
-      matchedSkills: [],
-      interviewRounds: [],
-      notes: 'Imported via Smart JD Parser',
-      priority: 4,
-      tags: ['Smart Extracted']
-    });
-
-    setIsSmartPasteOpen(false);
-    setRawText('');
-    setParsedData(null);
-    setSelectedJob(newJob);
   };
 
   return (
@@ -98,10 +107,13 @@ export const SmartPasteModal: React.FC = () => {
 
           <button
             onClick={() => {
-              setIsSmartPasteOpen(false);
-              setParsedData(null);
+              if (!isSaving) {
+                setIsSmartPasteOpen(false);
+                setParsedData(null);
+              }
             }}
-            className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-400 hover:text-slate-700"
+            disabled={isSaving}
+            className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-400 hover:text-slate-700 disabled:opacity-50"
           >
             <X className="w-4 h-4" />
           </button>
@@ -151,6 +163,7 @@ Requirements: React, TypeScript, GraphQL, Next.js, Node.js`}
                 </div>
                 <button
                   onClick={() => setParsedData(null)}
+                  disabled={isSaving}
                   className="text-xs text-slate-500 hover:text-slate-800 underline font-medium"
                 >
                   Edit raw text
@@ -265,17 +278,20 @@ Requirements: React, TypeScript, GraphQL, Next.js, Node.js`}
               <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
                 <button
                   type="button"
+                  disabled={isSaving}
                   onClick={() => setParsedData(null)}
-                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold"
+                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold disabled:opacity-50"
                 >
                   Back
                 </button>
                 <button
                   type="button"
+                  disabled={isSaving}
                   onClick={handleSave}
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-sm shadow-indigo-200"
+                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-sm shadow-indigo-200 flex items-center gap-2 disabled:opacity-75 disabled:cursor-not-allowed"
                 >
-                  Save to Pipeline
+                  {isSaving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  <span>{isSaving ? 'Saving...' : 'Save to Pipeline'}</span>
                 </button>
               </div>
 

@@ -393,7 +393,13 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         }
       }
 
-      if (filters.status !== 'all' && job.status !== filters.status) return false;
+      if (filters.status === 'all') {
+        // Exclude archived jobs by default unless user selects 'archived' filter
+        if (job.status === 'archived') return false;
+      } else if (job.status !== filters.status) {
+        return false;
+      }
+
       if (filters.workMode !== 'all' && job.workMode !== filters.workMode) return false;
       if (filters.jobType !== 'all' && job.jobType !== filters.jobType) return false;
       if (filters.source !== 'all' && job.source !== filters.source) return false;

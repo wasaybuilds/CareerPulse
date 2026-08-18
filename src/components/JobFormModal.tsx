@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Briefcase, Sparkles, Star } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Briefcase, Sparkles, Star, Loader2 } from 'lucide-react';
 import { useJobs } from '../context/JobContext';
 import type { JobStatus, WorkMode, JobType } from '../types/job';
 import { parseJobDescriptionText } from '../utils/helpers';
@@ -24,44 +24,77 @@ export const JobFormModal: React.FC = () => {
   const [jobDescription, setJobDescription] = useState('');
   const [notes, setNotes] = useState('');
   const [priority, setPriority] = useState<1 | 2 | 3 | 4 | 5>(3);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Reset form when modal opens
+  useEffect(() => {
+    if (isAddModalOpen) {
+      setCompany('');
+      setRole('');
+      setLocation('Remote');
+      setWorkMode('remote');
+      setJobType('full-time');
+      setStatus('wishlist');
+      setDateApplied('');
+      setSalaryMin('');
+      setSalaryMax('');
+      setSalaryCurrency('USD');
+      setUrl('');
+      setSource('LinkedIn');
+      setResumeVersion('');
+      setKeySkillsInput('');
+      setJobDescription('');
+      setNotes('');
+      setPriority(3);
+      setIsSubmitting(false);
+    }
+  }, [isAddModalOpen]);
 
   if (!isAddModalOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!company.trim() || !role.trim()) return;
+    if (!company.trim() || !role.trim() || isSubmitting) return;
 
-    const keySkills = keySkillsInput
-      .split(',')
-      .map(s => s.trim())
-      .filter(Boolean);
+    setIsSubmitting(true);
+    try {
+      const keySkills = keySkillsInput
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
 
-    const newJob = await addJob({
-      company: company.trim(),
-      role: role.trim(),
-      location: location.trim() || 'Remote',
-      workMode,
-      jobType,
-      status,
-      dateApplied: (status === 'applied' && !dateApplied) ? new Date().toISOString().split('T')[0] : dateApplied || undefined,
-      salaryMin: salaryMin ? parseFloat(salaryMin) : undefined,
-      salaryMax: salaryMax ? parseFloat(salaryMax) : undefined,
-      salaryCurrency,
-      salaryPeriod: 'year',
-      url: url.trim() || undefined,
-      source: source.trim() || 'Direct',
-      jobDescription: jobDescription.trim() || `Position for ${role} at ${company}.`,
-      keySkills,
-      matchedSkills: [],
-      resumeVersion: resumeVersion.trim() || undefined,
-      interviewRounds: [],
-      notes: notes.trim(),
-      priority,
-      tags: [workMode.toUpperCase(), jobType.toUpperCase()]
-    });
+      const newJob = await addJob({
+        company: company.trim(),
+        role: role.trim(),
+        location: location.trim() || 'Remote',
+        workMode,
+        jobType,
+        status,
+        dateApplied: (status === 'applied' && !dateApplied) ? new Date().toISOString().split('T')[0] : dateApplied || undefined,
+        salaryMin: salaryMin ? parseFloat(salaryMin) : undefined,
+        salaryMax: salaryMax ? parseFloat(salaryMax) : undefined,
+        salaryCurrency,
+        salaryPeriod: 'year',
+        url: url.trim() || undefined,
+        source: source.trim() || 'Direct',
+        jobDescription: jobDescription.trim() || `Position for ${role} at ${company}.`,
+        keySkills,
+        matchedSkills: [],
+        resumeVersion: resumeVersion.trim() || undefined,
+        interviewRounds: [],
+        notes: notes.trim(),
+        priority,
+        tags: [workMode.toUpperCase(), jobType.toUpperCase()]
+      });
 
-    setIsAddModalOpen(false);
-    setSelectedJob(newJob);
+      // Close modal immediately and select the newly created job
+      setIsAddModalOpen(false);
+      setSelectedJob(newJob);
+    } catch (err) {
+      console.error('Error saving job:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleAutoExtractJD = () => {
@@ -97,6 +130,7 @@ export const JobFormModal: React.FC = () => {
 
           <button
             onClick={() => setIsAddModalOpen(false)}
+            disabled={isSubmitting}
             className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-400 hover:text-slate-700"
           >
             <X className="w-4 h-4" />
@@ -353,16 +387,19 @@ export const JobFormModal: React.FC = () => {
           <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
             <button
               type="button"
+              disabled={isSubmitting}
               onClick={() => setIsAddModalOpen(false)}
-              className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold"
+              className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-sm shadow-indigo-200"
+              disabled={isSubmitting}
+              className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-sm shadow-indigo-200 flex items-center gap-2 disabled:opacity-75 disabled:cursor-not-allowed"
             >
-              Save Application
+              {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+              <span>{isSubmitting ? 'Saving...' : 'Save Application'}</span>
             </button>
           </div>
 
