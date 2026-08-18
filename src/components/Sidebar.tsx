@@ -64,53 +64,56 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       {/* Mobile backdrop */}
       {isOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-xs lg:hidden"
+          className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
+      {/* Dark SaaS Sidebar */}
       <aside className={`
         fixed lg:static inset-y-0 left-0 z-50
-        w-64 bg-white border-r border-slate-200
+        w-64 bg-[#0f172a] text-slate-200 border-r border-slate-800
         flex flex-col justify-between
-        transition-transform duration-200 ease-in-out shadow-sm lg:shadow-none
+        transition-transform duration-200 ease-in-out shadow-xl lg:shadow-none
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         
-        {/* Top Header */}
+        {/* Top Header & Navigation */}
         <div className="flex flex-col">
-          <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+          
+          {/* Logo & Workspace Brand */}
+          <div className="p-4 border-b border-slate-800/80 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold shadow-sm shadow-indigo-200 shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-950 shrink-0">
                 <Layers className="w-4 h-4" />
               </div>
               <div>
-                <h1 className="text-sm font-bold tracking-tight text-slate-900 flex items-center gap-1 font-sans">
-                  Career<span className="text-indigo-600">Pulse</span>
+                <h1 className="text-sm font-extrabold tracking-tight text-white flex items-center gap-1">
+                  Career<span className="text-indigo-400">Pulse</span>
                 </h1>
-                <p className="text-[10px] text-slate-400 font-medium">Job Search Command Center</p>
+                <p className="text-[10px] text-slate-400 font-medium">Job Application OS</p>
               </div>
             </div>
 
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1 rounded-md text-slate-400 hover:text-slate-700 lg:hidden"
+              className="p-1 rounded-md text-slate-400 hover:text-white lg:hidden"
             >
               ✕
             </button>
           </div>
 
-          {/* Action Buttons */}
-          <div className="p-3 space-y-1.5 border-b border-slate-100 bg-slate-50/50">
+          {/* Primary Action Buttons (Exclusively in Sidebar) */}
+          <div className="p-3 space-y-1.5 border-b border-slate-800/60 bg-slate-900/40">
             <button
               onClick={() => {
                 setIsAddModalOpen(true);
                 setIsOpen(false);
               }}
-              className="w-full py-2 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm shadow-indigo-200 transition active:scale-[0.98]"
+              className="w-full py-2 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-indigo-950 transition active:scale-[0.98]"
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add Application</span>
+              <Plus className="w-4 h-4" />
+              <span>New Application</span>
             </button>
 
             <button
@@ -118,17 +121,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 setIsSmartPasteOpen(true);
                 setIsOpen(false);
               }}
-              className="w-full py-1.5 px-3 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-medium text-xs flex items-center justify-center gap-1.5 transition shadow-2xs"
+              className="w-full py-1.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs flex items-center justify-center gap-2 transition"
             >
-              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
               <span>Smart Paste JD</span>
             </button>
           </div>
 
-          {/* Navigation Views */}
+          {/* Main Navigation Views */}
           <div className="p-3 space-y-1">
             <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Workspace Views
+              Views
             </div>
 
             <button
@@ -136,18 +139,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 setViewMode('table');
                 setIsOpen(false);
               }}
-              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition ${
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition ${
                 viewMode === 'table'
-                  ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/70'
               }`}
             >
-              <div className="flex items-center gap-2">
-                <TableIcon className={`w-3.5 h-3.5 ${viewMode === 'table' ? 'text-indigo-600' : 'text-slate-400'}`} />
+              <div className="flex items-center gap-2.5">
+                <TableIcon className="w-4 h-4" />
                 <span>Applications Table</span>
               </div>
-              <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${
-                viewMode === 'table' ? 'bg-indigo-200/60 text-indigo-800' : 'bg-slate-100 text-slate-500'
+              <span className={`text-[10px] px-2 py-0.2 rounded-full font-bold ${
+                viewMode === 'table' ? 'bg-indigo-700 text-white' : 'bg-slate-800 text-slate-300'
               }`}>
                 {jobs.length}
               </span>
@@ -158,14 +161,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 setViewMode('kanban');
                 setIsOpen(false);
               }}
-              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition ${
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition ${
                 viewMode === 'kanban'
-                  ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/70'
               }`}
             >
-              <div className="flex items-center gap-2">
-                <Kanban className={`w-3.5 h-3.5 ${viewMode === 'kanban' ? 'text-indigo-600' : 'text-slate-400'}`} />
+              <div className="flex items-center gap-2.5">
+                <Kanban className="w-4 h-4" />
                 <span>Pipeline Board</span>
               </div>
             </button>
@@ -175,14 +178,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 setViewMode('analytics');
                 setIsOpen(false);
               }}
-              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition ${
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition ${
                 viewMode === 'analytics'
-                  ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/70'
               }`}
             >
-              <div className="flex items-center gap-2">
-                <BarChart3 className={`w-3.5 h-3.5 ${viewMode === 'analytics' ? 'text-indigo-600' : 'text-slate-400'}`} />
+              <div className="flex items-center gap-2.5">
+                <BarChart3 className="w-4 h-4" />
                 <span>Analytics & Funnel</span>
               </div>
             </button>
@@ -192,14 +195,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 setViewMode('calendar');
                 setIsOpen(false);
               }}
-              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition ${
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition ${
                 viewMode === 'calendar'
-                  ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/70'
               }`}
             >
-              <div className="flex items-center gap-2">
-                <CalendarIcon className={`w-3.5 h-3.5 ${viewMode === 'calendar' ? 'text-indigo-600' : 'text-slate-400'}`} />
+              <div className="flex items-center gap-2.5">
+                <CalendarIcon className="w-4 h-4" />
                 <span>Interview Schedule</span>
               </div>
             </button>
@@ -213,136 +216,136 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
             <button
               onClick={() => handleStageClick('all')}
-              className={`w-full flex items-center justify-between px-2.5 py-1 rounded-lg text-xs transition ${
+              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition ${
                 filters.status === 'all'
-                  ? 'bg-slate-100 text-slate-900 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-slate-800 text-white font-bold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 font-medium'
               }`}
             >
               <div className="flex items-center gap-2">
-                <Inbox className="w-3.5 h-3.5 text-slate-500" />
+                <Inbox className="w-3.5 h-3.5 text-slate-400" />
                 <span>All Applications</span>
               </div>
-              <span className="text-[10px] text-slate-500 font-medium">{jobs.length}</span>
+              <span className="text-[10px] text-slate-400 font-bold">{jobs.length}</span>
             </button>
 
             <button
               onClick={() => handleStageClick('wishlist')}
-              className={`w-full flex items-center justify-between px-2.5 py-1 rounded-lg text-xs transition ${
+              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition ${
                 filters.status === 'wishlist'
-                  ? 'bg-slate-200 text-slate-900 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-slate-800 text-white font-bold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 font-medium'
               }`}
             >
               <div className="flex items-center gap-2">
-                <Bookmark className="w-3.5 h-3.5 text-slate-500" />
+                <Bookmark className="w-3.5 h-3.5 text-slate-400" />
                 <span>Wishlist</span>
               </div>
-              <span className="text-[10px] text-slate-500 font-medium">{stageCounts.wishlist}</span>
+              <span className="text-[10px] text-slate-400">{stageCounts.wishlist}</span>
             </button>
 
             <button
               onClick={() => handleStageClick('applied')}
-              className={`w-full flex items-center justify-between px-2.5 py-1 rounded-lg text-xs transition ${
+              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition ${
                 filters.status === 'applied'
-                  ? 'bg-blue-50 text-blue-800 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-blue-950/80 text-blue-300 border border-blue-800/60 font-bold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 font-medium'
               }`}
             >
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                <span className="w-2 h-2 rounded-full bg-blue-400"></span>
                 <span>Applied</span>
               </div>
-              <span className="text-[10px] text-blue-600 font-semibold">{stageCounts.applied}</span>
+              <span className="text-[10px] text-blue-400 font-bold">{stageCounts.applied}</span>
             </button>
 
             <button
               onClick={() => handleStageClick('oa')}
-              className={`w-full flex items-center justify-between px-2.5 py-1 rounded-lg text-xs transition ${
+              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition ${
                 filters.status === 'oa'
-                  ? 'bg-amber-50 text-amber-800 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-amber-950/80 text-amber-300 border border-amber-800/60 font-bold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 font-medium'
               }`}
             >
               <div className="flex items-center gap-2">
-                <Clock className="w-3.5 h-3.5 text-amber-500" />
+                <Clock className="w-3.5 h-3.5 text-amber-400" />
                 <span>Assessment (OA)</span>
               </div>
-              <span className="text-[10px] text-amber-600 font-semibold">{stageCounts.oa}</span>
+              <span className="text-[10px] text-amber-400 font-bold">{stageCounts.oa}</span>
             </button>
 
             <button
               onClick={() => handleStageClick('interview')}
-              className={`w-full flex items-center justify-between px-2.5 py-1 rounded-lg text-xs transition ${
+              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition ${
                 filters.status === 'interview'
-                  ? 'bg-indigo-50 text-indigo-800 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-indigo-950/80 text-indigo-300 border border-indigo-800/60 font-bold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 font-medium'
               }`}
             >
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400" />
                 <span>Interviewing</span>
               </div>
-              <span className="text-[10px] text-indigo-600 font-semibold">{stageCounts.interview}</span>
+              <span className="text-[10px] text-indigo-400 font-bold">{stageCounts.interview}</span>
             </button>
 
             <button
               onClick={() => handleStageClick('offer')}
-              className={`w-full flex items-center justify-between px-2.5 py-1 rounded-lg text-xs transition ${
+              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition ${
                 filters.status === 'offer'
-                  ? 'bg-emerald-50 text-emerald-800 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-emerald-950/90 text-emerald-300 border border-emerald-700/60 font-bold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 font-medium'
               }`}
             >
               <div className="flex items-center gap-2">
-                <Award className="w-3.5 h-3.5 text-emerald-600" />
+                <Award className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Offers 🎉</span>
               </div>
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded-full">{stageCounts.offer}</span>
+              <span className="text-[10px] font-extrabold text-emerald-400 bg-emerald-900/60 px-1.5 py-0.2 rounded-full">{stageCounts.offer}</span>
             </button>
 
             <button
               onClick={() => handleStageClick('rejected')}
-              className={`w-full flex items-center justify-between px-2.5 py-1 rounded-lg text-xs transition ${
+              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition ${
                 filters.status === 'rejected'
-                  ? 'bg-rose-50 text-rose-800 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-slate-800 text-white font-bold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 font-medium'
               }`}
             >
               <div className="flex items-center gap-2">
                 <XCircle className="w-3.5 h-3.5 text-rose-400" />
                 <span>Rejected</span>
               </div>
-              <span className="text-[10px] text-slate-500 font-medium">{stageCounts.rejected}</span>
+              <span className="text-[10px] text-slate-400">{stageCounts.rejected}</span>
             </button>
 
             <button
               onClick={() => handleStageClick('archived')}
-              className={`w-full flex items-center justify-between px-2.5 py-1 rounded-lg text-xs transition ${
+              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition ${
                 filters.status === 'archived'
-                  ? 'bg-slate-100 text-slate-800 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-slate-800 text-white font-bold'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 font-medium'
               }`}
             >
               <div className="flex items-center gap-2">
                 <Archive className="w-3.5 h-3.5 text-slate-400" />
                 <span>Archived</span>
               </div>
-              <span className="text-[10px] text-slate-500 font-medium">{stageCounts.archived}</span>
+              <span className="text-[10px] text-slate-400">{stageCounts.archived}</span>
             </button>
           </div>
 
         </div>
 
-        {/* Footer Actions & MongoDB Status */}
-        <div className="p-3 border-t border-slate-200 space-y-2 bg-slate-50/50">
+        {/* Dark Footer: CSV / Sample Data & MongoDB Status */}
+        <div className="p-3 border-t border-slate-800 space-y-2 bg-[#0a0f1d]">
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setIsImportExportOpen(true)}
-              className="flex-1 py-1.5 px-2 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition shadow-2xs"
+              className="flex-1 py-1.5 px-2 rounded-lg bg-slate-850 hover:bg-slate-800 text-slate-200 border border-slate-700/80 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition"
               title="Export CSV / JSON"
             >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
               <span>Import / Export</span>
             </button>
 
@@ -352,7 +355,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                   resetToSampleData();
                 }
               }}
-              className="p-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-500 hover:text-slate-800 border border-slate-200 transition shadow-2xs"
+              className="p-1.5 rounded-lg bg-slate-850 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-700/80 transition"
               title="Reset sample data"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -362,21 +365,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           {/* Database Connection Badge */}
           <button
             onClick={() => syncWithMongoDB()}
-            className={`w-full py-1.5 px-2.5 rounded-lg text-[11px] font-medium border flex items-center justify-between transition ${
+            className={`w-full py-1.5 px-2.5 rounded-lg text-[11px] font-semibold border flex items-center justify-between transition ${
               dbStatus.online
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
-                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                ? 'bg-emerald-950/60 text-emerald-300 border-emerald-700/50 hover:bg-emerald-900/60'
+                : 'bg-slate-850 text-slate-400 border-slate-800 hover:bg-slate-800'
             }`}
             title="Click to sync with MongoDB Atlas"
           >
-            <div className="flex items-center gap-1.5">
-              <span className={`w-2 h-2 rounded-full ${dbStatus.online ? 'bg-emerald-500 ring-2 ring-emerald-200' : 'bg-amber-400'}`}></span>
-              <span className="font-semibold">{dbStatus.online ? 'MongoDB Atlas Live' : 'Local Storage'}</span>
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${dbStatus.online ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
+              <span>{dbStatus.online ? 'MongoDB Atlas Live' : 'Local Storage'}</span>
             </div>
             {isSyncing ? (
               <RefreshCw className="w-3 h-3 animate-spin text-slate-400" />
             ) : (
-              <span className="text-[10px] text-slate-400 font-semibold">Sync</span>
+              <span className="text-[10px] text-slate-400 font-bold">Sync</span>
             )}
           </button>
         </div>
