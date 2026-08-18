@@ -83,7 +83,7 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   });
 
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
-  const [viewMode, setViewMode] = useState<ViewMode>('kanban');
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
   const [selectedJob, setSelectedJob] = useState<JobApplication | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [isSmartPasteOpen, setIsSmartPasteOpen] = useState<boolean>(false);
