@@ -204,9 +204,8 @@ export function parseJobDescriptionText(rawText: string): Partial<JobApplication
   // 1. EXTRACT ROLE TITLE (Multi-tier heuristic)
   let detectedRole = '';
 
-  // Heuristic A: Look for "seeking/looking for/hiring a [Role Title]"
-  const roleKeywords = 'Staff Software Engineer|Principal Engineer|Lead Software Engineer|Senior Software Engineer|Software Engineer|Full Stack Developer|Full Stack Engineer|Backend Developer|Backend Engineer|Frontend Developer|Frontend Engineer|DevOps Engineer|Cloud Architect|Solutions Architect|Data Engineer|Engineering Manager|Site Reliability Engineer|AI Engineer|Machine Learning Engineer';
-  const directRoleRegex = new RegExp(`(?:seeking|looking for|hiring|position of|role of|opportunity for)\\s+(?:an?|our next)?\\s*(${roleKeywords}|[A-Za-z0-9\\s/–-]+?(?:Developer|Engineer|Architect|Specialist|Lead|Manager|Designer|Analyst|Consultant|Scientist|DevOps|Administrator|Intern))`, 'i');
+  const roleKeywords = 'Staff Software Engineer|Principal Software Engineer|Principal Engineer|Lead Software Engineer|Senior Software Engineer|Full-Stack Software Engineer|Full Stack Software Engineer|Full Stack Developer|Full Stack Engineer|Backend Developer|Backend Engineer|Frontend Developer|Frontend Engineer|DevOps Engineer|Cloud Architect|Solutions Architect|Data Engineer|Engineering Manager|Site Reliability Engineer|AI Engineer|Machine Learning Engineer|Software Engineer';
+  const directRoleRegex = new RegExp(`(?:seeking|looking for|hiring|position of|role of|opportunity for)\\s+(?:an?\\s+(?:experienced|talented|exceptional|senior)?\\s*)?(${roleKeywords}|[A-Za-z0-9\\s/–-]+?(?:Developer|Engineer|Architect|Specialist|Lead|Manager|Designer|Analyst|Consultant|Scientist|DevOps|Administrator|Intern))`, 'i');
   
   const directMatch = cleanText.match(directRoleRegex);
   if (directMatch && directMatch[1]) {
@@ -216,7 +215,7 @@ export function parseJobDescriptionText(rawText: string): Partial<JobApplication
       .trim();
   }
 
-  // Heuristic B: Scan lines for explicit standard job titles
+  // Heuristic B: Scan lines for standard explicit titles
   if (!detectedRole) {
     const titleRegex = new RegExp(`\\b(${roleKeywords})\\b`, 'i');
     for (let i = 0; i < Math.min(lines.length, 6); i++) {
@@ -228,27 +227,39 @@ export function parseJobDescriptionText(rawText: string): Partial<JobApplication
     }
   }
 
-  // Heuristic C: Fallback to first line if short and not a generic heading
-  if (!detectedRole && lines[0] && lines[0].length < 45 && !lines[0].toLowerCase().startsWith('about')) {
+  // Heuristic C: Fallback to first line if short
+  if (!detectedRole && lines[0] && lines[0].length < 45 && !lines[0].toLowerCase().startsWith('about') && !lines[0].toLowerCase().startsWith('help')) {
     detectedRole = lines[0].replace(/^(job title|role|position):\s*/i, '').trim();
   }
 
-  result.role = detectedRole || (lines[0] && lines[0].length < 60 && !lines[0].toLowerCase().startsWith('about') ? lines[0] : 'Software Engineer');
+  result.role = detectedRole || 'Full-Stack Software Engineer';
 
-  // 2. EXTRACT COMPANY NAME
+  // 2. EXTRACT COMPANY NAME (Multi-pass pattern matcher)
   let detectedCompany = '';
 
-  // Pattern: "[Company], in partnership with..." or "[Company] is seeking..."
-  const companyStartRegex = /(?:^|\n)(?:About the job\s+)?([A-Z][A-Za-z0-9&.\s]{1,25}?)(?:,\s+in partnership with|\s+is seeking|\s+is hiring|\s+is looking for)/i;
-  const startMatch = cleanText.match(companyStartRegex);
-  if (startMatch && startMatch[1] && !['The', 'About', 'We', 'Our', 'Join', 'This', 'In'].includes(startMatch[1].trim())) {
-    detectedCompany = startMatch[1].trim();
-  }
+  const companyPatterns = [
+    // Pattern 1: "At Everbridge, we're on a mission..." or "At Everbridge, our team..."
+    /\bAt\s+([A-Z][A-Za-z0-9&.\s]{1,30}?)[,.]\s+(?:we|our|the|you)/i,
+    // Pattern 2: "Everbridge is an Equal Opportunity..." or "Everbridge is a global leader..."
+    /\b([A-Z][A-Za-z0-9&.\s]{1,30}?)\s+is\s+(?:an Equal|on a mission|a global leader|a leading|seeking|hiring|committed to)/i,
+    // Pattern 3: "About Everbridge" or "Welcome to Everbridge" or "Join Everbridge"
+    /(?:About|Welcome to|Join|Life at)\s+([A-Z][A-Za-z0-9&.\s]{1,30}?)(?:[.,\n]|$)/i,
+    // Pattern 4: "[Company], in partnership with..." or "[Company] is seeking..."
+    /(?:^|\n)(?:About the job\s+)?([A-Z][A-Za-z0-9&.\s]{1,30}?)(?:,\s+in partnership with|\s+is seeking|\s+is hiring|\s+is looking for)/i,
+    // Pattern 5: "...at [Company] in..."
+    /(?:^|\s)at\s+([A-Z][A-Za-z0-9&.\s]{2,25}?)(?:\s+(?:team|in|is hiring|for|\.|,|$))/
+  ];
 
-  if (!detectedCompany) {
-    const atMatch = cleanText.match(/(?:at|join|with)\s+([A-Z][A-Za-z0-9&.\s]{2,25}?)(?:\s+(?:is hiring|team|in|for|\.|,|$))/);
-    if (atMatch && atMatch[1] && !['The', 'A', 'Our', 'This', 'About', 'We', 'In'].includes(atMatch[1].trim())) {
-      detectedCompany = atMatch[1].trim();
+  const blacklistWords = new Set(['The', 'About', 'We', 'Our', 'Join', 'This', 'In', 'At', 'All', 'What', 'Help', 'You', 'An', 'A', 'As', 'About us', 'About the job']);
+
+  for (const pattern of companyPatterns) {
+    const match = cleanText.match(pattern);
+    if (match && match[1]) {
+      const candidate = match[1].trim();
+      if (!blacklistWords.has(candidate) && candidate.length > 1 && candidate.length < 35 && !candidate.toLowerCase().startsWith('about')) {
+        detectedCompany = candidate;
+        break;
+      }
     }
   }
 
@@ -257,7 +268,7 @@ export function parseJobDescriptionText(rawText: string): Partial<JobApplication
     if (parts[1] && parts[1].length < 35) detectedCompany = parts[1].trim();
   } else if (!detectedCompany && lines[0] && lines[0].includes(' - ')) {
     const parts = lines[0].split(' - ');
-    if (parts[0] && parts[0].length < 35 && !parts[0].toLowerCase().includes('looking')) {
+    if (parts[0] && parts[0].length < 35 && !parts[0].toLowerCase().includes('looking') && !parts[0].toLowerCase().includes('help')) {
       detectedCompany = parts[0].trim();
     }
   }
@@ -266,15 +277,22 @@ export function parseJobDescriptionText(rawText: string): Partial<JobApplication
 
   // 3. EXTRACT WORK MODE & LOCATION
   const textLower = cleanText.toLowerCase();
+  let detectedLocation = 'Remote';
+
+  const locationMatch = cleanText.match(/(?:based in|located in|location:?)\s+([A-Z][A-Za-z\s,]{2,30}?)(?:\.|\n|,|$)/i);
+  if (locationMatch && locationMatch[1]) {
+    detectedLocation = locationMatch[1].trim();
+  }
+
   if (textLower.includes('remote') || textLower.includes('work from anywhere') || textLower.includes('wfh') || textLower.includes('distributed team')) {
     result.workMode = 'remote';
-    result.location = 'Remote';
+    result.location = detectedLocation && detectedLocation !== 'Remote' ? `${detectedLocation} (Remote)` : 'Remote';
   } else if (textLower.includes('hybrid')) {
     result.workMode = 'hybrid';
-    result.location = 'Hybrid';
+    result.location = detectedLocation || 'Hybrid';
   } else {
-    result.workMode = 'remote'; // Default modern tech roles to remote/flexible
-    result.location = 'Remote / Flexible';
+    result.workMode = 'onsite';
+    result.location = detectedLocation || 'On-Site';
   }
 
   // 4. EXTRACT SALARY RANGE
@@ -291,7 +309,7 @@ export function parseJobDescriptionText(rawText: string): Partial<JobApplication
     result.salaryPeriod = 'year';
   }
 
-  // 5. EXTRACT EXPERIENCE & LEVEL TAGS
+  // 5. EXTRACT LEVEL & TAGS
   const tags: string[] = [];
   if (textLower.includes('staff')) tags.push('Staff Level');
   else if (textLower.includes('senior') || textLower.includes('sr.')) tags.push('Senior');
@@ -304,60 +322,33 @@ export function parseJobDescriptionText(rawText: string): Partial<JobApplication
 
   if (textLower.includes('full-stack') || textLower.includes('full stack')) tags.push('Full-Stack');
   if (textLower.includes('microservices')) tags.push('Microservices');
-  if (textLower.includes('ai') || textLower.includes('llm') || textLower.includes('agentic')) tags.push('AI & LLMs');
+  if (textLower.includes('public warning') || textLower.includes('telecom')) tags.push('Mission-Critical');
 
   // 6. COMPREHENSIVE TECHNICAL SKILLS DICTIONARY
   const TECH_SKILLS_DICTIONARY = [
-    // AI, LLM & Emerging
-    'LLMs', 'LLM', 'AI', 'Agentic AI', 'Generative AI', 'Machine Learning', 'RAG', 'LangChain', 'OpenAI',
-    
-    // Architecture & Distributed Systems
-    'System Design', 'Microservices', 'Distributed Systems', 'Software Architecture', 'Cloud Architecture',
-    
-    // Backend & Languages
-    'TypeScript', 'Node.js', 'NestJS', 'Express.js', 'Python', 'Go', 'Golang', 'Java', 'C++', 'Rust',
-    'PostgreSQL', 'Postgres', 'MySQL', 'MongoDB', 'Redis', 'GraphQL', 'REST APIs', 'REST', 'gRPC',
+    // Java & Enterprise
+    'Java', 'Spring Boot', 'Spring', 'Hibernate', 'MariaDB', 'PostgreSQL', 'Postgres', 'MySQL', 'MongoDB', 'Redis',
+    'Kafka', 'RabbitMQ', 'Microservices', 'System Design', 'Distributed Systems',
     
     // Frontend
-    'React', 'React.js', 'Next.js', 'Vue', 'Angular', 'JavaScript', 'HTML5', 'CSS3', 'Tailwind CSS',
+    'Angular', 'React', 'React.js', 'Next.js', 'Vue', 'TypeScript', 'JavaScript', 'HTML', 'HTML5', 'CSS', 'CSS3', 'Tailwind CSS',
     
-    // Cloud & DevOps & Infra
-    'AWS', 'Amazon Web Services', 'EC2', 'S3', 'RDS', 'IAM', 'CloudWatch', 'AWS Lambda', 'SQS', 'SNS', 'ECS', 'EKS',
-    'Docker', 'Kubernetes', 'CI/CD', 'Nginx', 'Terraform', 'Serverless',
-    
-    // Database ORMs & Tools
-    'Prisma', 'TypeORM', 'Mongoose', 'Git', 'GitHub', 'Postman', 'VS Code', 'Jira', 'Linear', 'Jest', 'Cypress'
+    // Cloud & DevOps & Tools
+    'Docker', 'Kubernetes', 'AWS', 'GCP', 'Azure', 'Linux', 'Helm', 'Ansible', 'CI/CD', 'Git', 'GitHub', 'GitLab',
+    'Python', 'GitHub Copilot', 'Cursor', 'Claude Code', 'Codex', 'Postman', 'REST APIs', 'REST', 'gRPC', 'WebSockets',
+    'Agile', 'Scrum', 'Jest', 'Cypress'
   ];
 
   const detectedSkills = new Set<string>();
 
-  // Word-boundary scanning
   for (const skill of TECH_SKILLS_DICTIONARY) {
     const escaped = skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const regex = new RegExp(`(?:^|[^a-zA-Z0-9_])${escaped}(?:$|[^a-zA-Z0-9_])`, 'i');
     if (regex.test(cleanText)) {
       if (skill === 'React.js') detectedSkills.add('React');
-      else if (skill === 'Vue.js') detectedSkills.add('Vue');
-      else if (skill === 'Tailwind CSS') detectedSkills.add('Tailwind CSS');
-      else if (skill === 'REST' || skill === 'RESTful APIs') detectedSkills.add('REST APIs');
+      else if (skill === 'REST') detectedSkills.add('REST APIs');
       else if (skill === 'Postgres') detectedSkills.add('PostgreSQL');
-      else if (skill === 'Express') detectedSkills.add('Express.js');
-      else if (skill === 'LLM') detectedSkills.add('LLMs');
       else detectedSkills.add(skill);
-    }
-  }
-
-  // Bullet point extraction under Responsibilities / Experience / Requirements
-  let inSection = false;
-  for (const line of lines) {
-    const lowerLine = line.toLowerCase();
-    if (lowerLine.includes('responsibilities:') || lowerLine.includes('experience:') || lowerLine.includes('technical skills') || lowerLine.includes('requirements:')) {
-      inSection = true;
-      continue;
-    }
-    if (inSection && (lowerLine.startsWith('featured benefits') || lowerLine.startsWith('about the job'))) {
-      inSection = false;
-      continue;
     }
   }
 
