@@ -1,13 +1,17 @@
 import express from 'express';
 import { Job } from '../models/Job.js';
+import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// GET /api/jobs - Retrieve all applications
+// Apply authMiddleware to all job routes
+router.use(authMiddleware);
+
+// GET /api/jobs - Retrieve all applications for current authenticated user
 router.get('/', async (req, res) => {
   try {
     const { status, workMode, search } = req.query;
-    const filter = {};
+    const filter = { userId: req.userId };
 
     if (status && status !== 'all') {
       filter.status = status;
@@ -35,7 +39,7 @@ router.get('/', async (req, res) => {
 // GET /api/jobs/:id - Get single application
 router.get('/:id', async (req, res) => {
   try {
-    const job = await Job.findOne({ id: req.params.id });
+    const job = await Job.findOne({ id: req.params.id, userId: req.userId });
     if (!job) {
       return res.status(404).json({ error: 'Job not found' });
     }
@@ -59,6 +63,8 @@ router.post('/', async (req, res) => {
     if (!jobData.dateAdded) {
       jobData.dateAdded = new Date().toISOString().split('T')[0];
     }
+    jobData.userId = req.userId;
+
     if (!jobData.history || jobData.history.length === 0) {
       jobData.history = [
         {
@@ -82,7 +88,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const updates = req.body;
-    const existing = await Job.findOne({ id: req.params.id });
+    const existing = await Job.findOne({ id: req.params.id, userId: req.userId });
     
     if (!existing) {
       return res.status(404).json({ error: 'Job not found' });
@@ -102,7 +108,7 @@ router.put('/:id', async (req, res) => {
     }
 
     const updatedJob = await Job.findOneAndUpdate(
-      { id: req.params.id },
+      { id: req.params.id, userId: req.userId },
       { $set: updates },
       { new: true, runValidators: true }
     );
@@ -117,7 +123,7 @@ router.put('/:id', async (req, res) => {
 // DELETE /api/jobs/:id - Delete an application
 router.delete('/:id', async (req, res) => {
   try {
-    const deleted = await Job.findOneAndDelete({ id: req.params.id });
+    const deleted = await Job.findOneAndDelete({ id: req.params.id, userId: req.userId });
     if (!deleted) {
       return res.status(404).json({ error: 'Job not found' });
     }
@@ -139,6 +145,7 @@ router.post('/import', async (req, res) => {
     const formatted = jobsList.map(j => ({
       ...j,
       id: j.id || `job-imp-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      userId: req.userId,
       dateAdded: j.dateAdded || new Date().toISOString().split('T')[0]
     }));
 
@@ -150,11 +157,11 @@ router.post('/import', async (req, res) => {
   }
 });
 
-// DELETE /api/jobs/clear/all - Clear all applications (with safety guard)
+// DELETE /api/jobs/clear/all - Clear user applications
 router.delete('/clear/all', async (req, res) => {
   try {
-    await Job.deleteMany({});
-    res.json({ message: 'All jobs cleared successfully' });
+    await Job.deleteMany({ userId: req.userId });
+    res.json({ message: 'All user jobs cleared successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to clear database' });
   }

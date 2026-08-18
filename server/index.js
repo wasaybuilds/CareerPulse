@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import jobRoutes from './routes/jobRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
 dotenv.config();
 
@@ -48,7 +49,10 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Routes
+// Authentication Routes
+app.use('/api/auth', authRoutes);
+
+// Job Application Routes
 app.use('/api/jobs', jobRoutes);
 
 // Root greeting

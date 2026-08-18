@@ -16,9 +16,13 @@ import {
   Archive,
   XCircle,
   Inbox,
-  Bookmark
+  Bookmark,
+  LogIn,
+  LogOut,
+  Shield
 } from 'lucide-react';
 import { useJobs } from '../context/JobContext';
+import { useAuth } from '../context/AuthContext';
 import type { JobStatus } from '../types/job';
 
 interface SidebarProps {
@@ -42,6 +46,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     syncWithMongoDB 
   } = useJobs();
 
+  const { user, isAuthenticated, setIsAuthModalOpen, logout } = useAuth();
+
   const stageCounts = {
     wishlist: jobs.filter(j => j.status === 'wishlist').length,
     applied: jobs.filter(j => j.status === 'applied').length,
@@ -57,6 +63,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     if (viewMode === 'analytics' || viewMode === 'calendar') {
       setViewMode('table');
     }
+  };
+
+  const getUserInitials = (name: string) => {
+    if (!name) return 'U';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    return name.substring(0, 2).toUpperCase();
   };
 
   return (
@@ -103,7 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             </button>
           </div>
 
-          {/* Primary Action Buttons (Exclusively in Sidebar) */}
+          {/* Primary Action Buttons */}
           <div className="p-3 space-y-1.5 border-b border-slate-800/60 bg-slate-900/40">
             <button
               onClick={() => {
@@ -337,8 +350,47 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
         </div>
 
-        {/* Dark Footer: CSV / Sample Data & MongoDB Status */}
+        {/* Dark Footer: User Profile, CSV & MongoDB Status */}
         <div className="p-3 border-t border-slate-800 space-y-2 bg-[#0a0f1d]">
+          
+          {/* User Profile Card / Sign In Button */}
+          {isAuthenticated && user ? (
+            <div className="p-2 rounded-xl bg-slate-800/90 border border-slate-700/80 flex items-center justify-between">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm">
+                  {getUserInitials(user.name)}
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-bold text-white truncate flex items-center gap-1">
+                    <span>{user.name}</span>
+                    <Shield className="w-3 h-3 text-indigo-400" />
+                  </div>
+                  <div className="text-[10px] text-slate-400 truncate">{user.email}</div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  if (confirm('Log out from CareerPulse?')) {
+                    logout();
+                  }
+                }}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-700/60 transition"
+                title="Log Out"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setIsAuthModalOpen(true)}
+              className="w-full py-2 px-3 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 text-xs font-bold flex items-center justify-center gap-2 transition shadow-sm"
+            >
+              <LogIn className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Sign In / Private Account</span>
+            </button>
+          )}
+
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setIsImportExportOpen(true)}

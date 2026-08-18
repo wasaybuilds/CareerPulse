@@ -12,6 +12,7 @@ import type {
 import { INITIAL_JOBS } from '../utils/mockData';
 import { calculateMetrics } from '../utils/helpers';
 import { apiService, type DbStatus } from '../services/api';
+import { useAuth } from './AuthContext';
 
 interface JobContextType {
   jobs: JobApplication[];
@@ -50,8 +51,6 @@ interface JobContextType {
   clearAllData: () => Promise<void>;
 }
 
-const STORAGE_KEY = 'careerpulse_job_applications_v2';
-
 const defaultFilters: FilterState = {
   searchQuery: '',
   status: 'all',
@@ -67,9 +66,12 @@ const defaultFilters: FilterState = {
 const JobContext = createContext<JobContextType | undefined>(undefined);
 
 export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
+  const storageKey = user ? `careerpulse_jobs_${user.id}` : 'careerpulse_jobs_guest';
+
   const [jobs, setJobs] = useState<JobApplication[]>(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = localStorage.getItem(storageKey);
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -97,13 +99,13 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // Sync to localStorage as resilient offline-first cache
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(jobs));
+      localStorage.setItem(storageKey, JSON.stringify(jobs));
     } catch (e) {
       console.error('Error caching jobs to storage:', e);
     }
-  }, [jobs]);
+  }, [jobs, storageKey]);
 
-  // Check backend & fetch MongoDB data on load
+  // Check backend & fetch MongoDB data on load or when user changes
   const syncWithMongoDB = async () => {
     setIsSyncing(true);
     try {
@@ -114,8 +116,8 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         const remoteJobs = await apiService.getJobs();
         if (Array.isArray(remoteJobs) && remoteJobs.length > 0) {
           setJobs(remoteJobs);
-        } else if (remoteJobs.length === 0 && jobs.length > 0) {
-          // If remote MongoDB is empty, auto-seed with local jobs
+        } else if (remoteJobs.length === 0 && !user) {
+          // If remote MongoDB is empty for guest, auto-seed with local jobs
           await apiService.importJobs(jobs);
         }
       }
@@ -133,7 +135,7 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       setDbStatus(health);
     }, 15000);
     return () => clearInterval(interval);
-  }, []);
+  }, [user]);
 
   // Synchronize selectedJob
   useEffect(() => {
@@ -150,7 +152,7 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       confetti({
         particleCount: 120,
         spread: 80,
-        colors: ['#ff3366', '#10b981', '#ffffff', '#fb7185', '#34d399'],
+        colors: ['#4f46e5', '#10b981', '#ffffff', '#f59e0b', '#3b82f6'],
         origin: { y: 0.6 }
       });
     } catch {
@@ -163,6 +165,7 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const newJob: JobApplication = {
       ...jobData,
       id: `job-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      userId: user?.id || 'anonymous',
       dateAdded: today,
       history: [
         {
@@ -319,6 +322,7 @@ export const JobProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const today = new Date().toISOString().split('T')[0];
     const formatted: JobApplication[] = newJobs.map(j => ({
       id: j.id || `job-imp-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      userId: user?.id || 'anonymous',
       company: j.company || 'Unknown Company',
       role: j.role || 'Software Engineer',
       location: j.location || 'Remote',

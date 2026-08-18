@@ -42,6 +42,11 @@ const JobSchema = new mongoose.Schema(
       unique: true,
       default: () => `job-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`
     },
+    userId: { 
+      type: String, 
+      default: 'anonymous',
+      index: true 
+    },
     company: { type: String, required: true, trim: true, index: true },
     role: { type: String, required: true, trim: true, index: true },
     location: { type: String, default: 'Remote' },
@@ -103,5 +108,6 @@ const JobSchema = new mongoose.Schema(
 
 // Compound search index for ultra-fast full-text searches
 JobSchema.index({ company: 'text', role: 'text', keySkills: 'text', notes: 'text' });
+JobSchema.index({ userId: 1, dateAdded: -1 });
 
-export const Job = mongoose.model('Job', JobSchema);
+export const Job = mongoose.models.Job || mongoose.model('Job', JobSchema);

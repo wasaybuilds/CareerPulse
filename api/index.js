@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import jobRoutes from '../server/routes/jobRoutes.js';
+import authRoutes from '../server/routes/authRoutes.js';
 
 dotenv.config();
 
@@ -13,7 +14,7 @@ app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '10mb' }));
 
 // Cached MongoDB Connection for Serverless Execution
-let cachedDb: typeof mongoose | null = null;
+let cachedDb = null;
 
 async function connectToDatabase() {
   if (cachedDb && mongoose.connection.readyState === 1) {
@@ -31,7 +32,7 @@ async function connectToDatabase() {
     });
     cachedDb = db;
     return db;
-  } catch (err: any) {
+  } catch (err) {
     console.error('❌ MongoDB Atlas connection error in serverless:', err.message);
     return null;
   }
@@ -53,6 +54,9 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// Authentication Routes
+app.use('/api/auth', authRoutes);
 
 // Routes
 app.use('/api/jobs', jobRoutes);
