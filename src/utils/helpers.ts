@@ -1,76 +1,72 @@
-import type { JobApplication, JobStatus, WorkMode, MetricSummary } from '../types/job';
+import type { JobApplication, JobStatus, MetricSummary, WorkMode } from '../types/job';
 
-export const STATUS_CONFIG: Record<JobStatus, {
-  label: string;
-  badgeBg: string;
-  badgeText: string;
-  borderColor: string;
-  dotColor: string;
-  description: string;
-}> = {
+export const STATUS_CONFIG: Record<JobStatus, { label: string; color: string; bg: string; badgeBg: string; border: string; dotColor: string }> = {
   wishlist: {
     label: 'Wishlist',
+    color: 'text-slate-700',
+    bg: 'bg-slate-50 hover:bg-slate-100/80',
     badgeBg: 'bg-slate-100 text-slate-700 border-slate-200',
-    badgeText: 'text-slate-700',
-    borderColor: 'border-slate-300',
-    dotColor: 'bg-slate-500',
-    description: 'Saved roles to apply to'
+    border: 'border-slate-300',
+    dotColor: 'bg-slate-400'
   },
   applied: {
     label: 'Applied',
+    color: 'text-blue-700',
+    bg: 'bg-blue-50/50 hover:bg-blue-50/80',
     badgeBg: 'bg-blue-50 text-blue-700 border-blue-200',
-    badgeText: 'text-blue-700',
-    borderColor: 'border-blue-300',
-    dotColor: 'bg-blue-600',
-    description: 'Application submitted'
+    border: 'border-blue-300',
+    dotColor: 'bg-blue-500'
   },
   oa: {
     label: 'Assessment (OA)',
+    color: 'text-amber-700',
+    bg: 'bg-amber-50/50 hover:bg-amber-50/80',
     badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
-    badgeText: 'text-amber-700',
-    borderColor: 'border-amber-300',
-    dotColor: 'bg-amber-500',
-    description: 'Online assessment / Take-home'
+    border: 'border-amber-300',
+    dotColor: 'bg-amber-500'
   },
   interview: {
     label: 'Interviewing',
+    color: 'text-indigo-700',
+    bg: 'bg-indigo-50/50 hover:bg-indigo-50/80',
     badgeBg: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-    badgeText: 'text-indigo-700',
-    borderColor: 'border-indigo-300',
-    dotColor: 'bg-indigo-600',
-    description: 'Interview rounds in progress'
+    border: 'border-indigo-300',
+    dotColor: 'bg-indigo-500'
   },
   offer: {
-    label: 'Offer Received 🎉',
-    badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-300 font-semibold',
-    badgeText: 'text-emerald-700',
-    borderColor: 'border-emerald-400',
-    dotColor: 'bg-emerald-600',
-    description: 'Official offer received'
+    label: 'Offer 🎉',
+    color: 'text-emerald-700',
+    bg: 'bg-emerald-50/60 hover:bg-emerald-50/90',
+    badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-300',
+    border: 'border-emerald-400',
+    dotColor: 'bg-emerald-500'
   },
   rejected: {
     label: 'Rejected',
+    color: 'text-rose-700',
+    bg: 'bg-rose-50/40 hover:bg-rose-50/70',
     badgeBg: 'bg-rose-50 text-rose-700 border-rose-200',
-    badgeText: 'text-rose-700',
-    borderColor: 'border-rose-200',
-    dotColor: 'bg-rose-500',
-    description: 'Application not selected'
+    border: 'border-rose-300',
+    dotColor: 'bg-rose-500'
   },
   archived: {
     label: 'Archived',
-    badgeBg: 'bg-zinc-100 text-zinc-600 border-zinc-200',
-    badgeText: 'text-zinc-600',
-    borderColor: 'border-zinc-300',
-    dotColor: 'bg-zinc-400',
-    description: 'Closed or withdrawn'
+    color: 'text-slate-600',
+    bg: 'bg-slate-50/60 hover:bg-slate-100',
+    badgeBg: 'bg-slate-100 text-slate-600 border-slate-200',
+    border: 'border-slate-300',
+    dotColor: 'bg-slate-400'
   }
 };
 
-export const WORK_MODE_CONFIG: Record<WorkMode, { label: string; iconName: string }> = {
-  remote: { label: 'Remote', iconName: 'Globe' },
-  hybrid: { label: 'Hybrid', iconName: 'Building2' },
-  onsite: { label: 'On-site', iconName: 'MapPin' }
-};
+export const PIPELINE_COLUMNS: JobStatus[] = [
+  'wishlist',
+  'applied',
+  'oa',
+  'interview',
+  'offer',
+  'rejected'
+];
 
 export function formatSalary(
   min?: number,
@@ -86,54 +82,75 @@ export function formatSalary(
     GBP: '£',
     INR: '₹',
     CAD: 'CA$',
-    AUD: 'AU$'
+    AUD: 'A$'
   };
-  const sym = symbolMap[currency] || `${currency} `;
+  const sym = symbolMap[currency] || '$';
 
   const formatNum = (num: number) => {
     if (num >= 1000) {
-      return (num / 1000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + 'k';
+      const k = num / 1000;
+      return `${sym}${Number.isInteger(k) ? k : k.toFixed(1)}k`;
     }
-    return num.toLocaleString();
+    return `${sym}${num.toLocaleString()}`;
   };
 
   const periodSuffix = period === 'year' ? '/yr' : period === 'month' ? '/mo' : '/hr';
 
   if (min && max) {
-    if (min === max) return `${sym}${formatNum(min)}${periodSuffix}`;
-    return `${sym}${formatNum(min)} - ${sym}${formatNum(max)}${periodSuffix}`;
+    return `${formatNum(min)} - ${formatNum(max)}${periodSuffix}`;
   }
-  if (min) return `From ${sym}${formatNum(min)}${periodSuffix}`;
-  if (max) return `Up to ${sym}${formatNum(max)}${periodSuffix}`;
+  if (min) {
+    return `From ${formatNum(min)}${periodSuffix}`;
+  }
+  if (max) {
+    return `Up to ${formatNum(max)}${periodSuffix}`;
+  }
   return 'Undisclosed';
 }
 
-export function formatDate(dateStr?: string): string {
-  if (!dateStr) return 'N/A';
+export function formatDate(dateString?: string): string {
+  if (!dateString) return '—';
   try {
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return dateStr;
-    return d.toLocaleDateString('en-US', {
+    const [year, month, day] = dateString.split('-').map(Number);
+    if (!year || !month || !day) return dateString;
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
     });
   } catch {
-    return dateStr;
+    return dateString;
   }
 }
 
-export function getDaysAgo(dateStr?: string): string {
-  if (!dateStr) return '';
-  const now = new Date();
-  const past = new Date(dateStr);
-  const diffTime = Math.abs(now.getTime() - past.getTime());
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 30) return `${diffDays}d ago`;
-  const diffMonths = Math.floor(diffDays / 30);
-  return `${diffMonths}mo ago`;
+export function getDaysAgo(dateString?: string): string {
+  if (!dateString) return '';
+  try {
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+    const today = new Date();
+    const diffTime = today.getTime() - date.getTime();
+    const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    if (days === 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    return `${days}d ago`;
+  } catch {
+    return '';
+  }
+}
+
+export function getDaysSince(dateString?: string): number | null {
+  if (!dateString) return null;
+  try {
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+    const today = new Date();
+    const diffTime = today.getTime() - date.getTime();
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  } catch {
+    return null;
+  }
 }
 
 export function calculateMetrics(jobs: JobApplication[]): MetricSummary {
@@ -167,74 +184,181 @@ export function calculateMetrics(jobs: JobApplication[]): MetricSummary {
   };
 }
 
+/**
+ * Intelligent Multi-Pass Natural Language Job Description Parser
+ */
 export function parseJobDescriptionText(rawText: string): Partial<JobApplication> {
+  const cleanText = rawText.trim();
   const result: Partial<JobApplication> = {
-    jobDescription: rawText.trim(),
+    jobDescription: cleanText,
     keySkills: [],
-    tags: []
+    tags: [],
+    priority: 4,
+    status: 'wishlist'
   };
 
-  const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
-  if (lines.length === 0) return result;
+  if (!cleanText) return result;
 
-  if (lines.length > 0) {
-    const firstLine = lines[0];
-    if (firstLine.includes(' at ')) {
-      const parts = firstLine.split(' at ');
-      result.role = parts[0].trim();
-      result.company = parts[1].trim();
-    } else if (firstLine.includes(' - ')) {
-      const parts = firstLine.split(' - ');
-      result.company = parts[0].trim();
-      result.role = parts[1].trim();
-    } else {
-      result.role = firstLine;
-      if (lines[1] && lines[1].length < 40) {
-        result.company = lines[1];
+  const lines = cleanText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+
+  // 1. EXTRACT ROLE TITLE (Multi-tier heuristic)
+  let detectedRole = '';
+
+  // Heuristic A: Look for "looking for / hiring / position of [Role Title]"
+  const lookingForRegex = /(?:looking for|seeking|hiring|role of|position of)\s+(?:an?|our next)?\s*([A-Za-z0-9\s/–-]+?(?:Developer|Engineer|Architect|Specialist|Lead|Manager|Designer|Analyst|Consultant|Scientist|DevOps|Administrator|Intern))/i;
+  const lookingMatch = cleanText.match(lookingForRegex);
+  if (lookingMatch && lookingMatch[1]) {
+    detectedRole = lookingMatch[1].trim().replace(/\s+(with|who|to|for|in|at)\b.*$/i, '').trim();
+  }
+
+  // Heuristic B: Check first few lines for standard job title patterns
+  if (!detectedRole) {
+    const rolePattern = /\b(Full[\s-]?Stack|Backend|Frontend|Software|Lead|Senior|Junior|Staff|Principal|DevOps|Cloud|Data|Mobile|iOS|Android|Product|Security|QA|Site Reliability|Systems|AI|ML|Machine Learning)\s+(Engineer|Developer|Architect|Specialist|Lead|Manager|Designer|Consultant|Scientist)\b/i;
+    for (let i = 0; i < Math.min(lines.length, 5); i++) {
+      const lineMatch = lines[i].match(rolePattern);
+      if (lineMatch) {
+        if (lines[i].length < 60 && !lines[i].toLowerCase().startsWith('we are')) {
+          detectedRole = lines[i].split(' - ')[0].split(' at ')[0].trim();
+        } else {
+          detectedRole = lineMatch[0].trim();
+        }
+        break;
       }
     }
   }
 
-  const textLower = rawText.toLowerCase();
-  if (textLower.includes('remote') || textLower.includes('work from anywhere') || textLower.includes('wfh')) {
+  // Heuristic C: Fallback to first line if short
+  if (!detectedRole && lines[0] && lines[0].length < 50) {
+    detectedRole = lines[0].replace(/^(job title|role|position):\s*/i, '').trim();
+  }
+
+  result.role = detectedRole || 'Full Stack Developer';
+
+  // 2. EXTRACT COMPANY NAME
+  let detectedCompany = '';
+  const atMatch = cleanText.match(/(?:at|join|with)\s+([A-Z][A-Za-z0-9&.\s]{2,30}?)(?:\s+(?:is hiring|team|in|for|\.|,|$))/);
+  if (atMatch && atMatch[1] && !['The', 'A', 'Our', 'This'].includes(atMatch[1].trim())) {
+    detectedCompany = atMatch[1].trim();
+  } else if (lines[0] && lines[0].includes(' at ')) {
+    const parts = lines[0].split(' at ');
+    if (parts[1] && parts[1].length < 40) detectedCompany = parts[1].trim();
+  } else if (lines[0] && lines[0].includes(' - ')) {
+    const parts = lines[0].split(' - ');
+    if (parts[0] && parts[0].length < 35 && !parts[0].toLowerCase().includes('looking')) {
+      detectedCompany = parts[0].trim();
+    }
+  }
+
+  result.company = detectedCompany || 'Hiring Company';
+
+  // 3. EXTRACT WORK MODE & LOCATION
+  const textLower = cleanText.toLowerCase();
+  if (textLower.includes('remote') || textLower.includes('work from anywhere') || textLower.includes('wfh') || textLower.includes('distributed team')) {
     result.workMode = 'remote';
     result.location = 'Remote';
   } else if (textLower.includes('hybrid')) {
     result.workMode = 'hybrid';
+    result.location = 'Hybrid';
   } else {
     result.workMode = 'onsite';
+    result.location = 'On-Site';
   }
 
+  // 4. EXTRACT SALARY RANGE
   const salaryRegex = /(?:\$|USD|€|£|₹)\s?(\d{1,3}(?:,\d{3})*|\d+)(?:k)?\s*(?:-|–|to)\s*(?:\$|USD|€|£|₹)?\s?(\d{1,3}(?:,\d{3})*|\d+)(?:k)?/i;
-  const salaryMatch = rawText.match(salaryRegex);
+  const salaryMatch = cleanText.match(salaryRegex);
   if (salaryMatch) {
     let minVal = parseFloat(salaryMatch[1].replace(/,/g, ''));
     let maxVal = parseFloat(salaryMatch[2].replace(/,/g, ''));
-    if (minVal < 1000 && (rawText.toLowerCase().includes('k') || minVal > 50)) minVal *= 1000;
-    if (maxVal < 1000 && (rawText.toLowerCase().includes('k') || maxVal > 50)) maxVal *= 1000;
+    if (minVal < 1000 && (textLower.includes('k') || minVal > 50)) minVal *= 1000;
+    if (maxVal < 1000 && (textLower.includes('k') || maxVal > 50)) maxVal *= 1000;
     result.salaryMin = minVal;
     result.salaryMax = maxVal;
     result.salaryCurrency = 'USD';
     result.salaryPeriod = 'year';
   }
 
-  const commonSkills = [
-    'React', 'TypeScript', 'JavaScript', 'Next.js', 'Node.js', 'Python', 'Go', 'Golang',
-    'Rust', 'Java', 'C++', 'C#', '.NET', 'AWS', 'GCP', 'Azure', 'Docker', 'Kubernetes',
-    'GraphQL', 'REST API', 'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Tailwind',
-    'Tailwind CSS', 'Redux', 'Zustand', 'Vue', 'Angular', 'Svelte', 'FastAPI', 'Django',
-    'Spring Boot', 'Kafka', 'Elasticsearch', 'CI/CD', 'Git', 'System Design', 'Microservices'
+  // 5. EXTRACT EXPERIENCE
+  const expMatch = cleanText.match(/(\d+[\s–-]+(?:\d+)?\s*(?:\+)?\s*years?(?:\s+of)?(?:\s+experience)?)/i);
+  const tags: string[] = [];
+  if (expMatch && expMatch[1]) {
+    tags.push(expMatch[1].trim());
+  }
+
+  // 6. COMPREHENSIVE TECHNICAL SKILLS DICTIONARY
+  const TECH_SKILLS_DICTIONARY = [
+    // Backend Frameworks & Runtimes
+    'NestJS', 'Node.js', 'Express.js', 'Express', 'FastAPI', 'Django', 'Flask', 'Spring Boot',
+    'ASP.NET', '.NET', 'Ruby on Rails', 'Laravel', 'Gin', 'Fiber', 'Axum', 'Actix',
+    
+    // Frontend & Web
+    'React', 'React.js', 'Next.js', 'Vue', 'Vue.js', 'Nuxt.js', 'Angular', 'Svelte', 'SvelteKit',
+    'TypeScript', 'JavaScript', 'HTML5', 'CSS3', 'Tailwind CSS', 'Tailwind', 'Redux', 'Zustand',
+    
+    // Cloud & DevOps & Infra
+    'AWS', 'Amazon Web Services', 'EC2', 'S3', 'IAM', 'RDS', 'CloudWatch', 'AWS Lambda',
+    'SQS', 'SNS', 'ECS', 'EKS', 'GCP', 'Google Cloud', 'Azure', 'Docker', 'Kubernetes',
+    'Terraform', 'CI/CD', 'GitHub Actions', 'Jenkins', 'Nginx', 'Serverless',
+    
+    // Databases & ORMs & Caching
+    'PostgreSQL', 'Postgres', 'MySQL', 'MongoDB', 'Redis', 'SQLite', 'Prisma', 'TypeORM',
+    'Mongoose', 'Drizzle ORM', 'Sequelize', 'DynamoDB', 'Cassandra', 'Elasticsearch',
+    
+    // APIs & Architecture
+    'REST APIs', 'REST', 'RESTful APIs', 'GraphQL', 'gRPC', 'WebSockets', 'OAuth', 'JWT',
+    'Microservices', 'System Design', 'Kafka', 'RabbitMQ',
+    
+    // Tools & Testing
+    'Git', 'GitHub', 'GitLab', 'Postman', 'VS Code', 'Jira', 'Linear', 'Jest', 'Cypress',
+    'Playwright', 'Vitest', 'Mocha', 'Agile', 'Scrum'
   ];
 
   const detectedSkills = new Set<string>();
-  for (const skill of commonSkills) {
-    const regex = new RegExp(`\\b${skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-    if (regex.test(rawText)) {
-      detectedSkills.add(skill);
+
+  // Direct word-boundary scanning
+  for (const skill of TECH_SKILLS_DICTIONARY) {
+    const escaped = skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(?:^|[^a-zA-Z0-9_])${escaped}(?:$|[^a-zA-Z0-9_])`, 'i');
+    if (regex.test(cleanText)) {
+      if (skill === 'React.js') detectedSkills.add('React');
+      else if (skill === 'Vue.js') detectedSkills.add('Vue');
+      else if (skill === 'Tailwind CSS') detectedSkills.add('Tailwind CSS');
+      else if (skill === 'REST' || skill === 'RESTful APIs') detectedSkills.add('REST APIs');
+      else if (skill === 'Postgres') detectedSkills.add('PostgreSQL');
+      else if (skill === 'Express') detectedSkills.add('Express.js');
+      else detectedSkills.add(skill);
     }
   }
-  result.keySkills = Array.from(detectedSkills).slice(0, 8);
+
+  // Also extract bullet points directly under "Technical Skills" or "Requirements"
+  let inSkillsSection = false;
+  for (const line of lines) {
+    const lowerLine = line.toLowerCase();
+    if (lowerLine.includes('technical skills') || lowerLine.includes('must haves') || lowerLine.includes('technologies')) {
+      inSkillsSection = true;
+      continue;
+    }
+    if (inSkillsSection) {
+      if (lowerLine.startsWith('key responsibilities') || lowerLine.startsWith('what we') || lowerLine.startsWith('about us')) {
+        inSkillsSection = false;
+        continue;
+      }
+      if (line.length > 1 && line.length < 35 && !line.includes('.')) {
+        const cleanedItem = line.replace(/^[•\-*]\s*/, '').trim();
+        if (cleanedItem && !['Backend', 'Frontend', 'Cloud & DevOps', 'Tools', 'Nice to Have'].includes(cleanedItem)) {
+          if (cleanedItem.includes(' or ')) {
+            cleanedItem.split(' or ').forEach(part => detectedSkills.add(part.trim()));
+          } else {
+            detectedSkills.add(cleanedItem);
+          }
+        }
+      }
+    }
+  }
+
+  result.keySkills = Array.from(detectedSkills).slice(0, 15);
   result.matchedSkills = [];
+  result.tags = [...tags, result.workMode?.toUpperCase() || 'REMOTE'];
 
   return result;
 }
