@@ -30,7 +30,6 @@ export const JobDetailModal: React.FC = () => {
     addInterviewRound, 
     updateInterviewRound, 
     deleteInterviewRound, 
-    deleteJob,
     setSharingJob,
     setIsShareModalOpen
   } = useJobs();
@@ -702,13 +701,20 @@ export const JobDetailModal: React.FC = () => {
         <div className="p-4 border-t border-slate-200 bg-white flex items-center justify-between text-xs shrink-0">
           <button
             onClick={() => {
-              if (confirm(`Delete application for ${selectedJob.role} at ${selectedJob.company}?`)) {
-                deleteJob(selectedJob.id);
+              const isArchived = selectedJob.status === 'archived';
+              const targetStatus = isArchived ? 'applied' : 'archived';
+              const actionText = isArchived ? 'Unarchive' : 'Archive';
+              if (confirm(`${actionText} application for ${selectedJob.role} at ${selectedJob.company}?`)) {
+                updateJobStatus(selectedJob.id, targetStatus as any, `${actionText}d from modal`);
               }
             }}
-            className="text-rose-600 hover:text-rose-700 font-bold"
+            className={`font-bold flex items-center gap-1.5 transition ${
+              selectedJob.status === 'archived'
+                ? 'text-indigo-600 hover:text-indigo-800'
+                : 'text-slate-500 hover:text-slate-800'
+            }`}
           >
-            Delete Application
+            <span>{selectedJob.status === 'archived' ? 'Unarchive Application' : 'Archive Application'}</span>
           </button>
 
           <button

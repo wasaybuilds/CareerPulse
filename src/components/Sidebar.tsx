@@ -7,7 +7,6 @@ import {
   Plus, 
   Sparkles, 
   FileSpreadsheet, 
-  Trash2, 
   Layers, 
   RefreshCw,
   CheckCircle2,
@@ -40,7 +39,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     setIsAddModalOpen, 
     setIsSmartPasteOpen, 
     setIsImportExportOpen, 
-    clearAllData, 
     dbStatus, 
     isSyncing, 
     syncWithMongoDB 
@@ -394,26 +392,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setIsImportExportOpen(true)}
-              className="flex-1 py-1.5 px-2 rounded-lg bg-slate-850 hover:bg-slate-800 text-slate-200 border border-slate-700/80 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition"
+              className="w-full py-1.5 px-2 rounded-lg bg-slate-850 hover:bg-slate-800 text-slate-200 border border-slate-700/80 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition"
               title="Export CSV / JSON"
             >
               <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
               <span>Import / Export</span>
             </button>
-
-            {jobs.length > 0 && (
-              <button
-                onClick={() => {
-                  if (confirm('Clear all applications and start completely fresh?')) {
-                    clearAllData();
-                  }
-                }}
-                className="p-1.5 rounded-lg bg-slate-850 hover:bg-rose-950 text-slate-400 hover:text-rose-400 border border-slate-700/80 transition"
-                title="Clear all applications"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            )}
           </div>
 
           {/* Database Connection Badge */}

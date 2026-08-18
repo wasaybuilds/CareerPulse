@@ -3,7 +3,7 @@ import {
   Star, 
   ExternalLink, 
   Share2, 
-  Trash2, 
+  Archive, 
   Eye, 
   FileText, 
   Clock, 
@@ -22,7 +22,6 @@ export const TableView: React.FC = () => {
     setSelectedJob, 
     updateJobStatus, 
     updateJob,
-    deleteJob, 
     setSharingJob, 
     setIsShareModalOpen,
     setIsAddModalOpen,
@@ -344,14 +343,21 @@ export const TableView: React.FC = () => {
 
                             <button
                               onClick={() => {
-                                if (confirm(`Delete ${job.role} at ${job.company}?`)) {
-                                  deleteJob(job.id);
+                                const isArchived = job.status === 'archived';
+                                const targetStatus = isArchived ? 'applied' : 'archived';
+                                const actionText = isArchived ? 'Unarchive' : 'Archive';
+                                if (confirm(`${actionText} ${job.role} at ${job.company}?`)) {
+                                  updateJobStatus(job.id, targetStatus as any, `${actionText}d from table`);
                                 }
                               }}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
-                              title="Delete"
+                              className={`p-1.5 rounded-lg transition ${
+                                job.status === 'archived'
+                                  ? 'text-indigo-600 hover:bg-indigo-50'
+                                  : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
+                              }`}
+                              title={job.status === 'archived' ? 'Unarchive Application' : 'Archive Application'}
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Archive className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </td>

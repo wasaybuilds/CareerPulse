@@ -17,7 +17,7 @@ interface JobCardProps {
 }
 
 export const JobCard: React.FC<JobCardProps> = ({ job }) => {
-  const { setSelectedJob, updateJobStatus, setSharingJob, setIsShareModalOpen, deleteJob } = useJobs();
+  const { setSelectedJob, updateJobStatus, setSharingJob, setIsShareModalOpen } = useJobs();
   const [showMenu, setShowMenu] = useState(false);
 
   // Find next upcoming interview
@@ -124,14 +124,17 @@ export const JobCard: React.FC<JobCardProps> = ({ job }) => {
                 <div className="h-px bg-slate-100 my-1"></div>
                 <button
                   onClick={() => {
-                    if (confirm(`Delete ${job.role} at ${job.company}?`)) {
-                      deleteJob(job.id);
+                    const isArchived = job.status === 'archived';
+                    const targetStatus = isArchived ? 'applied' : 'archived';
+                    const actionText = isArchived ? 'Unarchive' : 'Archive';
+                    if (confirm(`${actionText} ${job.role} at ${job.company}?`)) {
+                      updateJobStatus(job.id, targetStatus as any, `${actionText}d from card`);
                     }
                     setShowMenu(false);
                   }}
-                  className="w-full text-left px-3 py-1.5 hover:bg-rose-50 text-rose-600 font-medium"
+                  className="w-full text-left px-3 py-1.5 hover:bg-slate-50 text-slate-700 font-medium"
                 >
-                  Delete Application
+                  {job.status === 'archived' ? 'Unarchive Application' : 'Archive Application'}
                 </button>
               </div>
             )}
